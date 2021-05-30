@@ -34,14 +34,14 @@ pub struct FetchExternalTasksDto {
 impl FetchExternalTasksDto {
     pub fn new(
         worker_id: String,
-        timeout: i64,
+        async_response_timeout: i64,
         topics: Vec<crate::models::FetchExternalTaskTopicDto>,
     ) -> FetchExternalTasksDto {
         FetchExternalTasksDto {
             worker_id,
             max_tasks: Some(1),
             use_priority: None,
-            async_response_timeout: Some(timeout),
+            async_response_timeout: Some(async_response_timeout),
             topics: Some(topics),
         }
     }
