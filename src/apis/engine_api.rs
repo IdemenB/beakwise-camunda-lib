@@ -9,7 +9,6 @@
  */
 
 use async_trait::async_trait;
-use std::option::Option;
 use std::{borrow::Borrow, sync::Arc};
 
 use reqwest;

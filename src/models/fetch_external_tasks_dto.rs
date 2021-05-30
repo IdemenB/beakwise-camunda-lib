@@ -32,13 +32,17 @@ pub struct FetchExternalTasksDto {
 }
 
 impl FetchExternalTasksDto {
-    pub fn new(worker_id: String, max_tasks: Option<i32>) -> FetchExternalTasksDto {
+    pub fn new(
+        worker_id: String,
+        timeout: i64,
+        topics: Vec<crate::models::FetchExternalTaskTopicDto>,
+    ) -> FetchExternalTasksDto {
         FetchExternalTasksDto {
             worker_id,
-            max_tasks,
+            max_tasks: Some(1),
             use_priority: None,
-            async_response_timeout: None,
-            topics: None,
+            async_response_timeout: Some(timeout),
+            topics: Some(topics),
         }
     }
 }
