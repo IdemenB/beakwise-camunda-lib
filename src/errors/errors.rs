@@ -23,16 +23,6 @@ pub struct CamundaProcessError {
 
 impl Error for CamundaProcessError {}
 
-impl fmt::Display for CamundaProcessError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "BPMN Error Occured! Error Code: {:?} Error Message: {:?}",
-            self.code, self.error
-        )
-    }
-}
-
 #[derive(Debug)]
 pub struct CamundaProcessFailure {
     pub error: String,
@@ -41,12 +31,3 @@ pub struct CamundaProcessFailure {
 }
 
 impl Error for CamundaProcessFailure {}
-
-impl fmt::Display for CamundaProcessFailure {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Job Failed! Error: {:?}. The job will be retried {:?} more times with {:?} milliseconds intervals", self.error, self.retries, self.retry_timeout
-        )
-    }
-}
