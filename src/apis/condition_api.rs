@@ -13,7 +13,7 @@ use std::borrow::Borrow;
 use std::option::Option;
 use std::sync::Arc;
 
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 
 use super::configuration;
 
@@ -32,7 +32,7 @@ pub trait ConditionApi {
     async fn evaluate_condition(
         &self,
         evaluation_condition_dto: Option<crate::models::EvaluationConditionDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -40,7 +40,7 @@ impl ConditionApi for ConditionApiClient {
     async fn evaluate_condition(
         &self,
         evaluation_condition_dto: Option<crate::models::EvaluationConditionDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

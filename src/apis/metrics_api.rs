@@ -15,7 +15,7 @@ use std::sync::Arc;
 
 use reqwest;
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 
 use super::configuration;
 
@@ -36,7 +36,7 @@ pub trait MetricsApi {
         metrics_name: &str,
         start_date: Option<String>,
         end_date: Option<String>,
-    ) -> Result<crate::models::MetricsResultDto, WorkflowError>;
+    ) -> Result<crate::models::MetricsResultDto, CamundaClientError>;
     async fn interval(
         &self,
         name: Option<&str>,
@@ -47,7 +47,7 @@ pub trait MetricsApi {
         max_results: Option<i32>,
         interval: Option<&str>,
         aggregate_by_reporter: Option<&str>,
-    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -57,7 +57,7 @@ impl MetricsApi for MetricsApiClient {
         metrics_name: &str,
         start_date: Option<String>,
         end_date: Option<String>,
-    ) -> Result<crate::models::MetricsResultDto, WorkflowError> {
+    ) -> Result<crate::models::MetricsResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -94,7 +94,7 @@ impl MetricsApi for MetricsApiClient {
         max_results: Option<i32>,
         interval: Option<&str>,
         aggregate_by_reporter: Option<&str>,
-    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

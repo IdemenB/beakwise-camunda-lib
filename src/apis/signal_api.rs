@@ -18,7 +18,7 @@ pub use serde_derive;
 pub use serde_json;
 pub use url;
 
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 
 use super::configuration;
 
@@ -37,7 +37,7 @@ pub trait SignalApi {
     async fn throw_signal(
         &self,
         signal_dto: Option<crate::models::SignalDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
 }
 
 #[async_trait]
@@ -45,7 +45,7 @@ impl SignalApi for SignalApiClient {
     async fn throw_signal(
         &self,
         signal_dto: Option<crate::models::SignalDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

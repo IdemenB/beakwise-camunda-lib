@@ -20,7 +20,7 @@ pub use serde_json;
 pub use url;
 
 use super::configuration;
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 pub struct TaskApiClient {
     configuration: Arc<configuration::Configuration>,
 }
@@ -37,32 +37,38 @@ pub trait TaskApi {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn complete(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn create_task(
         &self,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn delegate_task(
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError>;
-    async fn delete_task(&self, id: &str) -> Result<(), WorkflowError>;
-    async fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError>;
-    async fn get_form(&self, id: &str) -> Result<crate::models::FormDto, WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
+    async fn delete_task(&self, id: &str) -> Result<(), CamundaClientError>;
+    async fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
+    async fn get_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError>;
     async fn get_form_variables(
         &self,
         id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
-    async fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError>;
-    async fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
+    async fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
+    async fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, CamundaClientError>;
     async fn get_tasks(
         &self,
         process_instance_id: Option<&str>,
@@ -156,7 +162,7 @@ pub trait TaskApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::TaskDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError>;
     async fn get_tasks_count(
         &self,
         process_instance_id: Option<&str>,
@@ -246,48 +252,51 @@ pub trait TaskApi {
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
         parent_task_id: Option<&str>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn handle_bpmn_error(
         &self,
         id: &str,
         task_bpmn_error_dto: Option<crate::models::TaskBpmnErrorDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn handle_escalation(
         &self,
         id: &str,
         task_escalation_dto: Option<crate::models::TaskEscalationDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn query_tasks(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<Vec<crate::models::TaskDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError>;
     async fn query_tasks_count(
         &self,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn resolve(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_assignee(
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn submit(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
-    async fn unclaim(&self, id: &str) -> Result<(), WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
+    async fn unclaim(&self, id: &str) -> Result<(), CamundaClientError>;
     async fn update_task(
         &self,
         id: &str,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
 }
 
 #[async_trait]
@@ -296,7 +305,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -323,8 +332,10 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -349,7 +360,7 @@ impl TaskApi for TaskApiClient {
     async fn create_task(
         &self,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -372,7 +383,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -395,7 +406,7 @@ impl TaskApi for TaskApiClient {
         Ok(())
     }
 
-    async fn delete_task(&self, id: &str) -> Result<(), WorkflowError> {
+    async fn delete_task(&self, id: &str) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -417,7 +428,7 @@ impl TaskApi for TaskApiClient {
         Ok(())
     }
 
-    async fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError> {
+    async fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -438,7 +449,7 @@ impl TaskApi for TaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_form(&self, id: &str) -> Result<crate::models::FormDto, WorkflowError> {
+    async fn get_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -464,8 +475,10 @@ impl TaskApi for TaskApiClient {
         id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -492,7 +505,7 @@ impl TaskApi for TaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError> {
+    async fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -513,7 +526,7 @@ impl TaskApi for TaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, WorkflowError> {
+    async fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -627,7 +640,7 @@ impl TaskApi for TaskApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::TaskDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1009,7 +1022,7 @@ impl TaskApi for TaskApiClient {
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
         parent_task_id: Option<&str>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1294,7 +1307,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_bpmn_error_dto: Option<crate::models::TaskBpmnErrorDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1321,7 +1334,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_escalation_dto: Option<crate::models::TaskEscalationDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1349,7 +1362,7 @@ impl TaskApi for TaskApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<Vec<crate::models::TaskDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1376,7 +1389,7 @@ impl TaskApi for TaskApiClient {
     async fn query_tasks_count(
         &self,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1398,7 +1411,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1425,7 +1438,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1452,8 +1465,10 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1475,7 +1490,7 @@ impl TaskApi for TaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn unclaim(&self, id: &str) -> Result<(), WorkflowError> {
+    async fn unclaim(&self, id: &str) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1501,7 +1516,7 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

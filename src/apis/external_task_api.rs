@@ -19,7 +19,7 @@ pub use serde_derive;
 pub use serde_json;
 pub use url;
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 
 use super::configuration;
 
@@ -39,21 +39,22 @@ pub trait ExternalTaskApi {
         &self,
         id: &str,
         complete_external_task_dto: Option<crate::models::CompleteExternalTaskDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn extend_lock(
         &self,
         id: &str,
         extend_lock_on_external_task_dto: Option<crate::models::ExtendLockOnExternalTaskDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn fetch_and_lock(
         &self,
         fetch_external_tasks_dto: Option<crate::models::FetchExternalTasksDto>,
-    ) -> Result<Vec<crate::models::LockedExternalTaskDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::LockedExternalTaskDto>, CamundaClientError>;
     async fn get_external_task(
         &self,
         id: &str,
-    ) -> Result<crate::models::ExternalTaskDto, WorkflowError>;
-    async fn get_external_task_error_details(&self, id: &str) -> Result<String, WorkflowError>;
+    ) -> Result<crate::models::ExternalTaskDto, CamundaClientError>;
+    async fn get_external_task_error_details(&self, id: &str)
+        -> Result<String, CamundaClientError>;
     async fn get_external_tasks(
         &self,
         external_task_id: Option<&str>,
@@ -81,7 +82,7 @@ pub trait ExternalTaskApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ExternalTaskDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ExternalTaskDto>, CamundaClientError>;
     async fn get_external_tasks_count(
         &self,
         external_task_id: Option<&str>,
@@ -105,52 +106,52 @@ pub trait ExternalTaskApi {
         suspended: Option<bool>,
         priority_higher_than_or_equals: Option<i64>,
         priority_lower_than_or_equals: Option<i64>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn get_topic_names(
         &self,
         with_locked_tasks: Option<bool>,
         with_unlocked_tasks: Option<bool>,
         with_retries_left: Option<bool>,
-    ) -> Result<Vec<String>, WorkflowError>;
+    ) -> Result<Vec<String>, CamundaClientError>;
     async fn handle_external_task_bpmn_error(
         &self,
         id: &str,
         external_task_bpmn_error: Option<crate::models::ExternalTaskBpmnError>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn handle_failure(
         &self,
         id: &str,
         external_task_failure_dto: Option<crate::models::ExternalTaskFailureDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn query_external_tasks(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         external_task_query_dto: Option<crate::models::ExternalTaskQueryDto>,
-    ) -> Result<Vec<crate::models::ExternalTaskDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ExternalTaskDto>, CamundaClientError>;
     async fn query_external_tasks_count(
         &self,
         external_task_query_dto: Option<crate::models::ExternalTaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn set_external_task_resource_priority(
         &self,
         id: &str,
         priority_dto: Option<crate::models::PriorityDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_external_task_resource_retries(
         &self,
         id: &str,
         retries_dto: Option<crate::models::RetriesDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_external_task_retries(
         &self,
         set_retries_for_external_tasks_dto: Option<crate::models::SetRetriesForExternalTasksDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_external_task_retries_async_operation(
         &self,
         set_retries_for_external_tasks_dto: Option<crate::models::SetRetriesForExternalTasksDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
-    async fn unlock(&self, id: &str) -> Result<(), WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    async fn unlock(&self, id: &str) -> Result<(), CamundaClientError>;
 }
 
 #[async_trait]
@@ -159,7 +160,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         complete_external_task_dto: Option<crate::models::CompleteExternalTaskDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -186,7 +187,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         extend_lock_on_external_task_dto: Option<crate::models::ExtendLockOnExternalTaskDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -212,7 +213,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
     async fn fetch_and_lock(
         &self,
         fetch_external_tasks_dto: Option<crate::models::FetchExternalTasksDto>,
-    ) -> Result<Vec<crate::models::LockedExternalTaskDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::LockedExternalTaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -233,7 +234,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
     async fn get_external_task(
         &self,
         id: &str,
-    ) -> Result<crate::models::ExternalTaskDto, WorkflowError> {
+    ) -> Result<crate::models::ExternalTaskDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -254,7 +255,10 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_external_task_error_details(&self, id: &str) -> Result<String, WorkflowError> {
+    async fn get_external_task_error_details(
+        &self,
+        id: &str,
+    ) -> Result<String, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -302,7 +306,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ExternalTaskDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ExternalTaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -417,7 +421,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         suspended: Option<bool>,
         priority_higher_than_or_equals: Option<i64>,
         priority_lower_than_or_equals: Option<i64>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -502,7 +506,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         with_locked_tasks: Option<bool>,
         with_unlocked_tasks: Option<bool>,
         with_retries_left: Option<bool>,
-    ) -> Result<Vec<String>, WorkflowError> {
+    ) -> Result<Vec<String>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -532,7 +536,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         external_task_bpmn_error: Option<crate::models::ExternalTaskBpmnError>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -559,7 +563,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         external_task_failure_dto: Option<crate::models::ExternalTaskFailureDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -587,7 +591,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         external_task_query_dto: Option<crate::models::ExternalTaskQueryDto>,
-    ) -> Result<Vec<crate::models::ExternalTaskDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ExternalTaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -614,7 +618,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
     async fn query_external_tasks_count(
         &self,
         external_task_query_dto: Option<crate::models::ExternalTaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -636,7 +640,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         priority_dto: Option<crate::models::PriorityDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -663,7 +667,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         &self,
         id: &str,
         retries_dto: Option<crate::models::RetriesDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -689,7 +693,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
     async fn set_external_task_retries(
         &self,
         set_retries_for_external_tasks_dto: Option<crate::models::SetRetriesForExternalTasksDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -711,7 +715,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
     async fn set_external_task_retries_async_operation(
         &self,
         set_retries_for_external_tasks_dto: Option<crate::models::SetRetriesForExternalTasksDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -729,7 +733,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn unlock(&self, id: &str) -> Result<(), WorkflowError> {
+    async fn unlock(&self, id: &str) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

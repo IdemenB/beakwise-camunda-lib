@@ -4,7 +4,7 @@ use std::option::Option;
 use std::sync::Arc;
 
 use super::configuration;
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 use crate::models::DecisionDto;
 use crate::models::DecisionEvaluationDto;
 use crate::utils::url_encode;
@@ -25,7 +25,7 @@ pub trait DecisionEvaluationApi {
         &self,
         id: &str,
         decision_evaluation_dto: Option<DecisionEvaluationDto>,
-    ) -> Result<Vec<DecisionDto>, WorkflowError>;
+    ) -> Result<Vec<DecisionDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -34,7 +34,7 @@ impl DecisionEvaluationApi for DecisionEvaluationApiClient {
         &self,
         id: &str,
         decision_evaluation_dto: Option<DecisionEvaluationDto>,
-    ) -> Result<Vec<DecisionDto>, WorkflowError> {
+    ) -> Result<Vec<DecisionDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

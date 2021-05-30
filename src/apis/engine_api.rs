@@ -13,7 +13,7 @@ use std::{borrow::Borrow, sync::Arc};
 
 use reqwest;
 
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 
 use super::configuration;
 
@@ -31,14 +31,14 @@ impl EngineApiClient {
 pub trait EngineApi {
     async fn get_process_engine_names(
         &self,
-    ) -> Result<Vec<crate::models::ProcessEngineDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessEngineDto>, CamundaClientError>;
 }
 
 #[async_trait]
 impl EngineApi for EngineApiClient {
     async fn get_process_engine_names(
         &self,
-    ) -> Result<Vec<crate::models::ProcessEngineDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessEngineDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

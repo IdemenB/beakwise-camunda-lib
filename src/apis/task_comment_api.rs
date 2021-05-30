@@ -13,7 +13,7 @@ use std::borrow::Borrow;
 use std::option::Option;
 use std::sync::Arc;
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 
 use super::configuration;
 pub use reqwest;
@@ -37,14 +37,16 @@ pub trait TaskCommentApi {
         &self,
         id: &str,
         comment_dto: Option<crate::models::CommentDto>,
-    ) -> Result<crate::models::CommentDto, WorkflowError>;
+    ) -> Result<crate::models::CommentDto, CamundaClientError>;
     async fn get_comment(
         &self,
         id: &str,
         comment_id: &str,
-    ) -> Result<crate::models::CommentDto, WorkflowError>;
-    async fn get_comments(&self, id: &str)
-        -> Result<Vec<crate::models::CommentDto>, WorkflowError>;
+    ) -> Result<crate::models::CommentDto, CamundaClientError>;
+    async fn get_comments(
+        &self,
+        id: &str,
+    ) -> Result<Vec<crate::models::CommentDto>, CamundaClientError>;
 }
 #[async_trait]
 impl TaskCommentApi for TaskCommentApiClient {
@@ -52,7 +54,7 @@ impl TaskCommentApi for TaskCommentApiClient {
         &self,
         id: &str,
         comment_dto: Option<crate::models::CommentDto>,
-    ) -> Result<crate::models::CommentDto, WorkflowError> {
+    ) -> Result<crate::models::CommentDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -78,7 +80,7 @@ impl TaskCommentApi for TaskCommentApiClient {
         &self,
         id: &str,
         comment_id: &str,
-    ) -> Result<crate::models::CommentDto, WorkflowError> {
+    ) -> Result<crate::models::CommentDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -103,7 +105,7 @@ impl TaskCommentApi for TaskCommentApiClient {
     async fn get_comments(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::CommentDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::CommentDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

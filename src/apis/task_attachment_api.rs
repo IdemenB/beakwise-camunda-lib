@@ -14,7 +14,7 @@ use std::option::Option;
 use std::sync::Arc;
 
 use super::configuration;
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 pub use reqwest;
 pub use serde;
 pub use serde_derive;
@@ -41,22 +41,26 @@ pub trait TaskAttachmentApi {
         attachment_type: Option<&str>,
         url: Option<&str>,
         content: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::AttachmentDto, WorkflowError>;
-    async fn delete_attachment(&self, id: &str, attachment_id: &str) -> Result<(), WorkflowError>;
+    ) -> Result<crate::models::AttachmentDto, CamundaClientError>;
+    async fn delete_attachment(
+        &self,
+        id: &str,
+        attachment_id: &str,
+    ) -> Result<(), CamundaClientError>;
     async fn get_attachment(
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<crate::models::AttachmentDto, WorkflowError>;
+    ) -> Result<crate::models::AttachmentDto, CamundaClientError>;
     async fn get_attachment_data(
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_attachments(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::AttachmentDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::AttachmentDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -69,7 +73,7 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         attachment_type: Option<&str>,
         url: Option<&str>,
         content: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::AttachmentDto, WorkflowError> {
+    ) -> Result<crate::models::AttachmentDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
         //Instead, a client of blocking type is created from scratch.
@@ -110,7 +114,11 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         Ok(resp.error_for_status()?.json()?)
     }
 
-    async fn delete_attachment(&self, id: &str, attachment_id: &str) -> Result<(), WorkflowError> {
+    async fn delete_attachment(
+        &self,
+        id: &str,
+        attachment_id: &str,
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -137,7 +145,7 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<crate::models::AttachmentDto, WorkflowError> {
+    ) -> Result<crate::models::AttachmentDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -163,7 +171,7 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -188,7 +196,7 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
     async fn get_attachments(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::AttachmentDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::AttachmentDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

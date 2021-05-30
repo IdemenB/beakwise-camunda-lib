@@ -13,7 +13,7 @@ use std::borrow::Borrow;
 use std::option::Option;
 use std::sync::Arc;
 
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 
 use super::configuration;
 pub use reqwest;
@@ -39,13 +39,13 @@ pub trait SchemaLogApi {
         version: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError>;
     async fn query_schema_log(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         schema_log_query_dto: Option<crate::models::SchemaLogQueryDto>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -55,7 +55,7 @@ impl SchemaLogApi for SchemaLogApiClient {
         version: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -86,7 +86,7 @@ impl SchemaLogApi for SchemaLogApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         schema_log_query_dto: Option<crate::models::SchemaLogQueryDto>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

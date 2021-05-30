@@ -9,7 +9,7 @@
  */
 use async_trait::async_trait;
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 use std::borrow::Borrow;
 use std::option::Option;
@@ -29,46 +29,57 @@ impl TaskVariableApiClient {
 
 #[async_trait]
 pub trait TaskVariableApi {
-    async fn delete_task_variable(&self, id: &str, var_name: &str) -> Result<(), WorkflowError>;
+    async fn delete_task_variable(
+        &self,
+        id: &str,
+        var_name: &str,
+    ) -> Result<(), CamundaClientError>;
     async fn get_task_variable(
         &self,
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, WorkflowError>;
+    ) -> Result<crate::models::VariableValueDto, CamundaClientError>;
     async fn get_task_variable_binary(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_task_variables(
         &self,
         id: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn modify_task_variables(
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn put_task_variable(
         &self,
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_binary_task_variable(
         &self,
         id: &str,
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
 }
 
 #[async_trait]
 impl TaskVariableApi for TaskVariableApiClient {
-    async fn delete_task_variable(&self, id: &str, var_name: &str) -> Result<(), WorkflowError> {
+    async fn delete_task_variable(
+        &self,
+        id: &str,
+        var_name: &str,
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -96,7 +107,7 @@ impl TaskVariableApi for TaskVariableApiClient {
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, WorkflowError> {
+    ) -> Result<crate::models::VariableValueDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -125,7 +136,7 @@ impl TaskVariableApi for TaskVariableApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -151,8 +162,10 @@ impl TaskVariableApi for TaskVariableApiClient {
         &self,
         id: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -180,7 +193,7 @@ impl TaskVariableApi for TaskVariableApiClient {
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -208,7 +221,7 @@ impl TaskVariableApi for TaskVariableApiClient {
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -238,7 +251,7 @@ impl TaskVariableApi for TaskVariableApiClient {
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
         //Instead, a client of blocking type is created from scratch.

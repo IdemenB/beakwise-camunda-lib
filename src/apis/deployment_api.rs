@@ -13,7 +13,7 @@ use std::option::Option;
 use std::sync::Arc;
 
 use super::configuration;
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 use crate::utils::url_encode;
 use async_trait::async_trait;
 use reqwest;
@@ -38,32 +38,32 @@ pub trait DeploymentApi {
         enable_duplicate_filtering: Option<bool>,
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError>;
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
     async fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn get_deployment(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
     async fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<crate::models::DeploymentResourceDto, WorkflowError>;
+    ) -> Result<crate::models::DeploymentResourceDto, CamundaClientError>;
     async fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_deployment_resources(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentResourceDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError>;
     async fn get_deployments(
         &self,
         id: Option<&str>,
@@ -80,7 +80,7 @@ pub trait DeploymentApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
     async fn get_deployments_count(
         &self,
         id: Option<&str>,
@@ -93,12 +93,12 @@ pub trait DeploymentApi {
         include_deployments_without_tenant_id: Option<bool>,
         after: Option<String>,
         before: Option<String>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError>;
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
 }
 
 #[async_trait]
@@ -111,7 +111,7 @@ impl DeploymentApi for DeploymentApiClient {
         enable_duplicate_filtering: Option<bool>,
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError> {
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
 
         //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
@@ -158,7 +158,7 @@ impl DeploymentApi for DeploymentApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -192,7 +192,7 @@ impl DeploymentApi for DeploymentApiClient {
     async fn get_deployment(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -217,7 +217,7 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<crate::models::DeploymentResourceDto, WorkflowError> {
+    ) -> Result<crate::models::DeploymentResourceDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -243,7 +243,7 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -268,7 +268,7 @@ impl DeploymentApi for DeploymentApiClient {
     async fn get_deployment_resources(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentResourceDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -305,7 +305,7 @@ impl DeploymentApi for DeploymentApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -376,7 +376,7 @@ impl DeploymentApi for DeploymentApiClient {
         include_deployments_without_tenant_id: Option<bool>,
         after: Option<String>,
         before: Option<String>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -428,7 +428,7 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError> {
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

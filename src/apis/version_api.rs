@@ -10,7 +10,7 @@
 use async_trait::async_trait;
 
 use super::configuration;
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 pub use reqwest;
 pub use serde;
 pub use serde_derive;
@@ -32,12 +32,12 @@ impl VersionApiClient {
 
 #[async_trait]
 pub trait VersionApi {
-    async fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, WorkflowError>;
+    async fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, CamundaClientError>;
 }
 
 #[async_trait]
 impl VersionApi for VersionApiClient {
-    async fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, WorkflowError> {
+    async fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

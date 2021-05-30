@@ -15,7 +15,7 @@ use std::sync::Arc;
 
 use reqwest;
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 
 use super::configuration;
 
@@ -34,7 +34,7 @@ pub trait ProcessInstanceApi {
     async fn delete_async_historic_query_based(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn delete_process_instance(
         &self,
         id: &str,
@@ -42,36 +42,39 @@ pub trait ProcessInstanceApi {
         skip_io_mappings: Option<bool>,
         skip_subprocesses: Option<bool>,
         fail_if_not_exists: Option<bool>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn delete_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn delete_process_instances_async_operation(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn get_activity_instance_tree(
         &self,
         id: &str,
-    ) -> Result<crate::models::ActivityInstanceDto, WorkflowError>;
+    ) -> Result<crate::models::ActivityInstanceDto, CamundaClientError>;
     async fn get_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, WorkflowError>;
+    ) -> Result<crate::models::VariableValueDto, CamundaClientError>;
     async fn get_process_instance_variable_binary(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_process_instance_variables(
         &self,
         id: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn get_process_instances(
         &self,
         sort_by: Option<&str>,
@@ -107,7 +110,7 @@ pub trait ProcessInstanceApi {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError>;
     async fn get_process_instances_count(
         &self,
         process_instance_ids: Option<&str>,
@@ -139,70 +142,70 @@ pub trait ProcessInstanceApi {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn modify_process_instance(
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn modify_process_instance_async_operation(
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn modify_process_instance_variables(
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn query_process_instances(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError>;
     async fn query_process_instances_count(
         &self,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
     async fn set_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_process_instance_variable_binary(
         &self,
         id: &str,
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn set_retries_by_process(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn set_retries_by_process_historic_query_based(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn update_suspension_state(
         &self,
         process_instance_suspension_state_dto: Option<
             crate::models::ProcessInstanceSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_suspension_state_async_operation(
         &self,
         process_instance_suspension_state_async_dto: Option<
             crate::models::ProcessInstanceSuspensionStateAsyncDto,
         >,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn update_suspension_state_by_id(
         &self,
         id: &str,
         suspension_state_dto: Option<crate::models::SuspensionStateDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
 }
 
 #[async_trait]
@@ -210,7 +213,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn delete_async_historic_query_based(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -238,7 +241,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         skip_io_mappings: Option<bool>,
         skip_subprocesses: Option<bool>,
         fail_if_not_exists: Option<bool>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -276,7 +279,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -302,7 +305,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn delete_process_instances_async_operation(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -323,7 +326,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn get_activity_instance_tree(
         &self,
         id: &str,
-    ) -> Result<crate::models::ActivityInstanceDto, WorkflowError> {
+    ) -> Result<crate::models::ActivityInstanceDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -349,7 +352,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, WorkflowError> {
+    ) -> Result<crate::models::VariableValueDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -378,7 +381,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -404,8 +407,10 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -464,7 +469,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -612,7 +617,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -721,7 +726,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -748,7 +753,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -774,7 +779,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -802,7 +807,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -829,7 +834,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn query_process_instances_count(
         &self,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -852,7 +857,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -882,7 +887,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
         //Instead, a client of blocking type is created from scratch.
@@ -919,7 +924,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn set_retries_by_process(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -940,7 +945,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     async fn set_retries_by_process_historic_query_based(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -966,7 +971,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         process_instance_suspension_state_dto: Option<
             crate::models::ProcessInstanceSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -990,7 +995,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         process_instance_suspension_state_async_dto: Option<
             crate::models::ProcessInstanceSuspensionStateAsyncDto,
         >,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1015,7 +1020,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         suspension_state_dto: Option<crate::models::SuspensionStateDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

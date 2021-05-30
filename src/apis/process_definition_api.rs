@@ -12,7 +12,7 @@ use async_trait::async_trait;
 use std::option::Option;
 use std::{borrow::Borrow, sync::Arc};
 
-use crate::{errors::errors::WorkflowError, utils::url_encode};
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 
 use super::configuration;
 pub use reqwest;
@@ -39,14 +39,14 @@ pub trait ProcessDefinitionApi {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn delete_process_definitions_by_key(
         &self,
         key: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn delete_process_definitions_by_key_and_tenant_id(
         &self,
         key: &str,
@@ -54,21 +54,21 @@ pub trait ProcessDefinitionApi {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn get_activity_statistics(
         &self,
         id: &str,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
     async fn get_activity_statistics_by_process_definition_key(
         &self,
         key: &str,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
     async fn get_activity_statistics_by_process_definition_key_and_tenant_id(
         &self,
         key: &str,
@@ -76,63 +76,66 @@ pub trait ProcessDefinitionApi {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError>;
-    async fn get_deployed_start_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
+    async fn get_deployed_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_deployed_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_deployed_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_latest_process_definition_by_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
     async fn get_process_definition(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
     async fn get_process_definition_bpmn20_xml(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
     async fn get_process_definition_bpmn20_xml_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
     async fn get_process_definition_bpmn20_xml_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
     async fn get_process_definition_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
     async fn get_process_definition_diagram(
         &self,
         id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_process_definition_diagram_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_process_definition_diagram_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_process_definition_statistics(
         &self,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
         root_incidents: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, CamundaClientError>;
     async fn get_process_definitions(
         &self,
         process_definition_id: Option<&str>,
@@ -171,7 +174,7 @@ pub trait ProcessDefinitionApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, CamundaClientError>;
     async fn get_process_definitions_count(
         &self,
         process_definition_id: Option<&str>,
@@ -206,124 +209,136 @@ pub trait ProcessDefinitionApi {
         startable_in_tasklist: Option<bool>,
         not_startable_in_tasklist: Option<bool>,
         startable_permission_check: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError>;
-    async fn get_rendered_start_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    async fn get_rendered_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_rendered_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
     async fn get_rendered_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError>;
-    async fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, WorkflowError>;
+    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    async fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError>;
     async fn get_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::FormDto, WorkflowError>;
+    ) -> Result<crate::models::FormDto, CamundaClientError>;
     async fn get_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::FormDto, WorkflowError>;
+    ) -> Result<crate::models::FormDto, CamundaClientError>;
     async fn get_start_form_variables(
         &self,
         id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn get_start_form_variables_by_key(
         &self,
         key: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn get_start_form_variables_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>;
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    >;
     async fn restart_process_instance(
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn restart_process_instance_async_operation(
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError>;
+    ) -> Result<crate::models::BatchDto, CamundaClientError>;
     async fn start_process_instance(
         &self,
         id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
     async fn start_process_instance_by_key(
         &self,
         key: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
     async fn start_process_instance_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
     async fn submit_form(
         &self,
         id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
     async fn submit_form_by_key(
         &self,
         key: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
     async fn submit_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError>;
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
     async fn update_history_time_to_live_by_process_definition_id(
         &self,
         id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_history_time_to_live_by_process_definition_key(
         &self,
         key: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_history_time_to_live_by_process_definition_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_process_definition_suspension_state(
         &self,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_process_definition_suspension_state_by_id(
         &self,
         id: &str,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_process_definition_suspension_state_by_key(
         &self,
         key: &str,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
     async fn update_process_definition_suspension_state_by_key_and_tenant_id(
         &self,
         key: &str,
@@ -331,7 +346,7 @@ pub trait ProcessDefinitionApi {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError>;
+    ) -> Result<(), CamundaClientError>;
 }
 #[async_trait]
 impl ProcessDefinitionApi for ProcessDefinitionApiClient {
@@ -341,7 +356,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -378,7 +393,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -416,7 +431,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -454,7 +469,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -490,7 +505,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -527,7 +542,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -558,7 +573,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_deployed_start_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError> {
+    async fn get_deployed_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -582,7 +600,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_deployed_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -607,7 +625,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -633,7 +651,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -658,7 +676,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -682,7 +700,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition_bpmn20_xml(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -706,7 +724,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition_bpmn20_xml_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -731,7 +749,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -756,7 +774,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -780,7 +798,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition_diagram(
         &self,
         id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -804,7 +822,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_process_definition_diagram_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -829,7 +847,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -857,7 +875,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
         root_incidents: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -924,7 +942,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1084,7 +1102,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         startable_in_tasklist: Option<bool>,
         not_startable_in_tasklist: Option<bool>,
         startable_permission_check: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, WorkflowError> {
+    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1198,7 +1216,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_rendered_start_form(&self, id: &str) -> Result<std::path::PathBuf, WorkflowError> {
+    async fn get_rendered_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1222,7 +1243,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_rendered_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1247,7 +1268,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, WorkflowError> {
+    ) -> Result<std::path::PathBuf, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1269,7 +1290,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(resp.error_for_status()?.json().await?)
     }
 
-    async fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, WorkflowError> {
+    async fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1293,7 +1314,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     async fn get_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::FormDto, WorkflowError> {
+    ) -> Result<crate::models::FormDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1318,7 +1339,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::FormDto, WorkflowError> {
+    ) -> Result<crate::models::FormDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1345,8 +1366,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1378,8 +1401,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1412,8 +1437,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         tenant_id: &str,
         variable_names: Option<&str>,
         deserialize_values: Option<bool>,
-    ) -> Result<::std::collections::HashMap<String, crate::models::VariableValueDto>, WorkflowError>
-    {
+    ) -> Result<
+        ::std::collections::HashMap<String, crate::models::VariableValueDto>,
+        CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1445,7 +1472,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1472,7 +1499,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<crate::models::BatchDto, WorkflowError> {
+    ) -> Result<crate::models::BatchDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1498,7 +1525,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1524,7 +1551,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1551,7 +1578,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1578,7 +1605,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1604,7 +1631,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1631,7 +1658,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, WorkflowError> {
+    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1658,7 +1685,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1685,7 +1712,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1713,7 +1740,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1742,7 +1769,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1767,7 +1794,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1796,7 +1823,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1826,7 +1853,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), WorkflowError> {
+    ) -> Result<(), CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

@@ -18,7 +18,7 @@ pub use serde_derive;
 pub use serde_json;
 pub use url;
 
-use crate::errors::errors::WorkflowError;
+use crate::errors::errors::CamundaClientError;
 
 use super::configuration;
 
@@ -36,7 +36,7 @@ pub trait MessageApi {
     async fn deliver_message(
         &self,
         correlation_message_dto: Option<crate::models::CorrelationMessageDto>,
-    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, WorkflowError>;
+    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, CamundaClientError>;
 }
 
 #[async_trait]
@@ -44,7 +44,8 @@ impl MessageApi for MessageApiClient {
     async fn deliver_message(
         &self,
         correlation_message_dto: Option<crate::models::CorrelationMessageDto>,
-    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, WorkflowError> {
+    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
