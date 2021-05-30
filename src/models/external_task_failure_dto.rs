@@ -18,9 +18,11 @@ pub struct ExternalTaskFailureDto {
     /// An message indicating the reason of the failure.
     #[serde(rename = "errorMessage", skip_serializing_if = "Option::is_none")]
     pub error_message: Option<String>,
-    /// A detailed error description.
-    #[serde(rename = "errorDetails", skip_serializing_if = "Option::is_none")]
-    pub error_details: Option<String>,
+
+    //error_details removed in version 7.5
+    // /// A detailed error description.
+    // #[serde(rename = "errorDetails", skip_serializing_if = "Option::is_none")]
+    // pub error_details: Option<String>,
     /// A number of how often the task should be retried. Must be >= 0. If this is 0, an incident is created and the task cannot be fetched anymore unless the retries are increased again. The incident's message is set to the `errorMessage` parameter.
     #[serde(rename = "retries", skip_serializing_if = "Option::is_none")]
     pub retries: Option<i32>,
@@ -34,7 +36,6 @@ impl ExternalTaskFailureDto {
         ExternalTaskFailureDto {
             worker_id: None,
             error_message: None,
-            error_details: None,
             retries: None,
             retry_timeout: None,
         }
