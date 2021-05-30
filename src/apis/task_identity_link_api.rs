@@ -9,44 +9,46 @@
  */
 
 use crate::{errors::errors::WorkflowError, utils::url_encode};
+use async_trait::async_trait;
 use reqwest;
 use std::borrow::Borrow;
-#[allow(unused_imports)]
 use std::option::Option;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::configuration;
 
 pub struct TaskIdentityLinkApiClient {
-    configuration: Rc<configuration::Configuration>,
+    configuration: Arc<configuration::Configuration>,
 }
 
 impl TaskIdentityLinkApiClient {
-    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskIdentityLinkApiClient {
+    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskIdentityLinkApiClient {
         TaskIdentityLinkApiClient { configuration }
     }
 }
 
+#[async_trait]
 pub trait TaskIdentityLinkApi {
-    fn add_identity_link(
+    async fn add_identity_link(
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
     ) -> Result<(), WorkflowError>;
-    fn delete_identity_link(
+    async fn delete_identity_link(
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
     ) -> Result<(), WorkflowError>;
-    fn get_identity_links(
+    async fn get_identity_links(
         &self,
         id: &str,
         _type: Option<&str>,
     ) -> Result<Vec<crate::models::IdentityLinkDto>, WorkflowError>;
 }
 
+#[async_trait]
 impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
-    fn add_identity_link(
+    async fn add_identity_link(
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
@@ -67,13 +69,13 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         req_builder = req_builder.json(&identity_link_dto);
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        client.execute(req)?.error_for_status()?;
+        resp.error_for_status()?.json().await?;
         Ok(())
     }
 
-    fn delete_identity_link(
+    async fn delete_identity_link(
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
@@ -94,13 +96,13 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         req_builder = req_builder.json(&identity_link_dto);
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        client.execute(req)?.error_for_status()?;
+        resp.error_for_status()?.json().await?;
         Ok(())
     }
 
-    fn get_identity_links(
+    async fn get_identity_links(
         &self,
         id: &str,
         _type: Option<&str>,
@@ -123,8 +125,8 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.error_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 }

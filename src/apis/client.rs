@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::configuration::Configuration;
 pub use reqwest;
@@ -30,35 +30,35 @@ pub struct APIClient {
 
 impl APIClient {
     pub fn new(configuration: Configuration) -> APIClient {
-        let rc = Rc::new(configuration);
+        let arc = Arc::new(configuration);
 
         APIClient {
-            condition_api: Box::new(crate::apis::ConditionApiClient::new(rc.clone())),
-            deployment_api: Box::new(crate::apis::DeploymentApiClient::new(rc.clone())),
-            engine_api: Box::new(crate::apis::EngineApiClient::new(rc.clone())),
+            condition_api: Box::new(crate::apis::ConditionApiClient::new(arc.clone())),
+            deployment_api: Box::new(crate::apis::DeploymentApiClient::new(arc.clone())),
+            engine_api: Box::new(crate::apis::EngineApiClient::new(arc.clone())),
             event_subscription_api: Box::new(crate::apis::EventSubscriptionApiClient::new(
-                rc.clone(),
+                arc.clone(),
             )),
-            external_task_api: Box::new(crate::apis::ExternalTaskApiClient::new(rc.clone())),
-            message_api: Box::new(crate::apis::MessageApiClient::new(rc.clone())),
-            metrics_api: Box::new(crate::apis::MetricsApiClient::new(rc.clone())),
+            external_task_api: Box::new(crate::apis::ExternalTaskApiClient::new(arc.clone())),
+            message_api: Box::new(crate::apis::MessageApiClient::new(arc.clone())),
+            metrics_api: Box::new(crate::apis::MetricsApiClient::new(arc.clone())),
             process_definition_api: Box::new(crate::apis::ProcessDefinitionApiClient::new(
-                rc.clone(),
+                arc.clone(),
             )),
-            process_instance_api: Box::new(crate::apis::ProcessInstanceApiClient::new(rc.clone())),
-            schema_log_api: Box::new(crate::apis::SchemaLogApiClient::new(rc.clone())),
-            signal_api: Box::new(crate::apis::SignalApiClient::new(rc.clone())),
-            task_api: Box::new(crate::apis::TaskApiClient::new(rc.clone())),
-            task_attachment_api: Box::new(crate::apis::TaskAttachmentApiClient::new(rc.clone())),
-            task_comment_api: Box::new(crate::apis::TaskCommentApiClient::new(rc.clone())),
+            process_instance_api: Box::new(crate::apis::ProcessInstanceApiClient::new(arc.clone())),
+            schema_log_api: Box::new(crate::apis::SchemaLogApiClient::new(arc.clone())),
+            signal_api: Box::new(crate::apis::SignalApiClient::new(arc.clone())),
+            task_api: Box::new(crate::apis::TaskApiClient::new(arc.clone())),
+            task_attachment_api: Box::new(crate::apis::TaskAttachmentApiClient::new(arc.clone())),
+            task_comment_api: Box::new(crate::apis::TaskCommentApiClient::new(arc.clone())),
             task_identity_link_api: Box::new(crate::apis::TaskIdentityLinkApiClient::new(
-                rc.clone(),
+                arc.clone(),
             )),
             task_local_variable_api: Box::new(crate::apis::TaskLocalVariableApiClient::new(
-                rc.clone(),
+                arc.clone(),
             )),
-            task_variable_api: Box::new(crate::apis::TaskVariableApiClient::new(rc.clone())),
-            version_api: Box::new(crate::apis::VersionApiClient::new(rc.clone())),
+            task_variable_api: Box::new(crate::apis::TaskVariableApiClient::new(arc.clone())),
+            version_api: Box::new(crate::apis::VersionApiClient::new(arc.clone())),
         }
     }
 

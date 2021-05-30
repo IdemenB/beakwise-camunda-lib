@@ -10,24 +10,25 @@
 
 use std::borrow::Borrow;
 use std::option::Option;
-use std::rc::Rc;
-
-use crate::errors::errors::WorkflowError;
-use crate::utils::url_encode;
-use reqwest;
+use std::sync::Arc;
 
 use super::configuration;
+use crate::errors::errors::WorkflowError;
+use crate::utils::url_encode;
+use async_trait::async_trait;
+use reqwest;
 
 pub struct DeploymentApiClient {
-    configuration: Rc<configuration::Configuration>,
+    configuration: Arc<configuration::Configuration>,
 }
 
 impl DeploymentApiClient {
-    pub fn new(configuration: Rc<configuration::Configuration>) -> DeploymentApiClient {
+    pub fn new(configuration: Arc<configuration::Configuration>) -> DeploymentApiClient {
         DeploymentApiClient { configuration }
     }
 }
 
+#[async_trait]
 pub trait DeploymentApi {
     fn create_deployment(
         &self,
@@ -38,29 +39,32 @@ pub trait DeploymentApi {
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError>;
-    fn delete_deployment(
+    async fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
     ) -> Result<(), WorkflowError>;
-    fn get_deployment(&self, id: &str) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError>;
-    fn get_deployment_resource(
+    async fn get_deployment(
+        &self,
+        id: &str,
+    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError>;
+    async fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
     ) -> Result<crate::models::DeploymentResourceDto, WorkflowError>;
-    fn get_deployment_resource_data(
+    async fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
     ) -> Result<std::path::PathBuf, WorkflowError>;
-    fn get_deployment_resources(
+    async fn get_deployment_resources(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentResourceDto>, WorkflowError>;
-    fn get_deployments(
+    async fn get_deployments(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -77,7 +81,7 @@ pub trait DeploymentApi {
         first_result: Option<i32>,
         max_results: Option<i32>,
     ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError>;
-    fn get_deployments_count(
+    async fn get_deployments_count(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -90,13 +94,14 @@ pub trait DeploymentApi {
         after: Option<String>,
         before: Option<String>,
     ) -> Result<crate::models::CountResultDto, WorkflowError>;
-    fn redeploy(
+    async fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError>;
 }
 
+#[async_trait]
 impl DeploymentApi for DeploymentApiClient {
     fn create_deployment(
         &self,
@@ -108,7 +113,11 @@ impl DeploymentApi for DeploymentApiClient {
         data: Option<std::path::PathBuf>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, WorkflowError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
-        let client = &configuration.client;
+
+        //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
+        //Instead, a client of blocking type is created from scratch.
+        // let client = &configuration.client;
+        let client = reqwest::blocking::Client::new();
 
         let uri_str = format!("{}/deployment/create", configuration.base_path);
         let mut req_builder = client.post(uri_str.as_str());
@@ -116,7 +125,7 @@ impl DeploymentApi for DeploymentApiClient {
         if let Some(ref user_agent) = configuration.user_agent {
             req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
         }
-        let mut form = reqwest::multipart::Form::new();
+        let mut form = reqwest::blocking::multipart::Form::new();
         if let Some(param_value) = tenant_id {
             form = form.text("tenant-id", param_value.to_string());
         }
@@ -138,12 +147,12 @@ impl DeploymentApi for DeploymentApiClient {
         req_builder = req_builder.multipart(form);
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send()?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json()?)
     }
 
-    fn delete_deployment(
+    async fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
@@ -174,13 +183,16 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        client.execute(req)?.WorkflowError_for_status()?;
+        resp.error_for_status()?.json().await?;
         Ok(())
     }
 
-    fn get_deployment(&self, id: &str) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError> {
+    async fn get_deployment(
+        &self,
+        id: &str,
+    ) -> Result<Vec<crate::models::DeploymentDto>, WorkflowError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -196,12 +208,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 
-    fn get_deployment_resource(
+    async fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
@@ -222,12 +234,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 
-    fn get_deployment_resource_data(
+    async fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
@@ -248,12 +260,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 
-    fn get_deployment_resources(
+    async fn get_deployment_resources(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentResourceDto>, WorkflowError> {
@@ -272,12 +284,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 
-    fn get_deployments(
+    async fn get_deployments(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -348,12 +360,11 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
-
-    fn get_deployments_count(
+    async fn get_deployments_count(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -408,12 +419,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 
-    fn redeploy(
+    async fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
@@ -434,8 +445,8 @@ impl DeploymentApi for DeploymentApiClient {
         req_builder = req_builder.json(&redeployment_dto);
 
         // send request
-        let req = req_builder.build()?;
+        let resp = req_builder.send().await?;
 
-        Ok(client.execute(req)?.WorkflowError_for_status()?.json()?)
+        Ok(resp.error_for_status()?.json().await?)
     }
 }
