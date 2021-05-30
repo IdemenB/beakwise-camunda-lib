@@ -9,6 +9,7 @@ pub use url;
 
 pub struct APIClient {
     condition_api: Box<dyn crate::apis::ConditionApi>,
+    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi>,
     deployment_api: Box<dyn crate::apis::DeploymentApi>,
     engine_api: Box<dyn crate::apis::EngineApi>,
     event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi>,
@@ -35,6 +36,9 @@ impl APIClient {
         APIClient {
             condition_api: Box::new(crate::apis::ConditionApiClient::new(arc.clone())),
             deployment_api: Box::new(crate::apis::DeploymentApiClient::new(arc.clone())),
+            decision_evaluation_api: Box::new(crate::apis::DecisionEvaluationApiClient::new(
+                arc.clone(),
+            )),
             engine_api: Box::new(crate::apis::EngineApiClient::new(arc.clone())),
             event_subscription_api: Box::new(crate::apis::EventSubscriptionApiClient::new(
                 arc.clone(),

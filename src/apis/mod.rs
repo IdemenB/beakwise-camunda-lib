@@ -1,5 +1,7 @@
 mod condition_api;
 pub use self::condition_api::{ConditionApi, ConditionApiClient};
+mod decision_evaluation_api;
+pub use self::decision_evaluation_api::{DecisionEvaluationApi, DecisionEvaluationApiClient};
 mod deployment_api;
 pub use self::deployment_api::{DeploymentApi, DeploymentApiClient};
 mod engine_api;
