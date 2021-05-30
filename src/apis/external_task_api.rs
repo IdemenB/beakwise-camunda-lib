@@ -47,7 +47,7 @@ pub trait ExternalTaskApi {
     ) -> Result<(), CamundaClientError>;
     async fn fetch_and_lock(
         &self,
-        fetch_external_tasks_dto: Option<&crate::models::FetchExternalTasksDto>,
+        fetch_external_tasks_dto: Option<crate::models::FetchExternalTasksDto>,
     ) -> Result<Vec<crate::models::LockedExternalTaskDto>, CamundaClientError>;
     async fn get_external_task(
         &self,
@@ -212,7 +212,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
 
     async fn fetch_and_lock(
         &self,
-        fetch_external_tasks_dto: Option<&crate::models::FetchExternalTasksDto>,
+        fetch_external_tasks_dto: Option<crate::models::FetchExternalTasksDto>,
     ) -> Result<Vec<crate::models::LockedExternalTaskDto>, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
