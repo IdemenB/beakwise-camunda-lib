@@ -1,5 +1,6 @@
 use reqwest;
 use serde_json;
+use std::error::Error as StandardError;
 use thiserror::Error;
 
 use crate::ProcessVariablesMap;
@@ -21,7 +22,7 @@ pub struct CamundaProcessError {
     pub variables: Option<ProcessVariablesMap>,
 }
 
-impl Error for CamundaProcessError {}
+impl StandardError for CamundaProcessError {}
 
 #[derive(Debug)]
 pub struct CamundaProcessFailure {
@@ -30,4 +31,4 @@ pub struct CamundaProcessFailure {
     pub retry_timeout: i64,
 }
 
-impl Error for CamundaProcessFailure {}
+impl StandardError for CamundaProcessFailure {}
