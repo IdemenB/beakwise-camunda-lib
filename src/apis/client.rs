@@ -8,25 +8,25 @@ pub use serde_json;
 pub use url;
 
 pub struct APIClient {
-    condition_api: Box<dyn crate::apis::ConditionApi>,
-    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi>,
-    deployment_api: Box<dyn crate::apis::DeploymentApi>,
-    engine_api: Box<dyn crate::apis::EngineApi>,
-    event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi>,
-    external_task_api: Box<dyn crate::apis::ExternalTaskApi>,
-    message_api: Box<dyn crate::apis::MessageApi>,
-    metrics_api: Box<dyn crate::apis::MetricsApi>,
-    process_definition_api: Box<dyn crate::apis::ProcessDefinitionApi>,
-    process_instance_api: Box<dyn crate::apis::ProcessInstanceApi>,
-    schema_log_api: Box<dyn crate::apis::SchemaLogApi>,
-    signal_api: Box<dyn crate::apis::SignalApi>,
-    task_api: Box<dyn crate::apis::TaskApi>,
-    task_attachment_api: Box<dyn crate::apis::TaskAttachmentApi>,
-    task_comment_api: Box<dyn crate::apis::TaskCommentApi>,
-    task_identity_link_api: Box<dyn crate::apis::TaskIdentityLinkApi>,
-    task_local_variable_api: Box<dyn crate::apis::TaskLocalVariableApi>,
-    task_variable_api: Box<dyn crate::apis::TaskVariableApi>,
-    version_api: Box<dyn crate::apis::VersionApi>,
+    condition_api: Box<dyn crate::apis::ConditionApi + Send>,
+    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi + Send>,
+    deployment_api: Box<dyn crate::apis::DeploymentApi + Send>,
+    engine_api: Box<dyn crate::apis::EngineApi + Send>,
+    event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi + Send>,
+    external_task_api: Box<dyn crate::apis::ExternalTaskApi + Send>,
+    message_api: Box<dyn crate::apis::MessageApi + Send>,
+    metrics_api: Box<dyn crate::apis::MetricsApi + Send>,
+    process_definition_api: Box<dyn crate::apis::ProcessDefinitionApi + Send>,
+    process_instance_api: Box<dyn crate::apis::ProcessInstanceApi + Send>,
+    schema_log_api: Box<dyn crate::apis::SchemaLogApi + Send>,
+    signal_api: Box<dyn crate::apis::SignalApi + Send>,
+    task_api: Box<dyn crate::apis::TaskApi + Send>,
+    task_attachment_api: Box<dyn crate::apis::TaskAttachmentApi + Send>,
+    task_comment_api: Box<dyn crate::apis::TaskCommentApi + Send>,
+    task_identity_link_api: Box<dyn crate::apis::TaskIdentityLinkApi + Send>,
+    task_local_variable_api: Box<dyn crate::apis::TaskLocalVariableApi + Send>,
+    task_variable_api: Box<dyn crate::apis::TaskVariableApi + Send>,
+    version_api: Box<dyn crate::apis::VersionApi + Send>,
 }
 
 impl APIClient {
@@ -72,6 +72,10 @@ impl APIClient {
 
     pub fn deployment_api(&self) -> &dyn crate::apis::DeploymentApi {
         self.deployment_api.as_ref()
+    }
+
+    pub fn decision_evaluation_api(&self) -> &dyn crate::apis::DecisionEvaluationApi {
+        self.decision_evaluation_api.as_ref()
     }
 
     pub fn engine_api(&self) -> &dyn crate::apis::EngineApi {
