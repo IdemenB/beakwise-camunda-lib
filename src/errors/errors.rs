@@ -16,17 +16,17 @@ pub enum CamundaClientError {
     Io(#[from] std::io::Error),
 }
 
-impl fmt::Display for CamundaClientError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            CamundaClientError::Reqwest(e) => write!(f, "HTTP Request Error: {}", e),
-            // The wrapped error contains additional information and is available
-            // via the source() method.
-            CamundaClientError::Serde(e) => write!(f, "Ser/De Error: {}", e),
-            CamundaClientError::Io(e) => write!(f, "IO  Error: {}", e),
-        }
-    }
-}
+// impl fmt::Display for CamundaClientError {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         match *self {
+//             CamundaClientError::Reqwest(e) => write!(f, "HTTP Request Error: {}", e),
+//             // The wrapped error contains additional information and is available
+//             // via the source() method.
+//             CamundaClientError::Serde(e) => write!(f, "Ser/De Error: {}", e),
+//             CamundaClientError::Io(e) => write!(f, "IO  Error: {}", e),
+//         }
+//     }
+// }
 #[derive(Debug, Error)]
 #[error("CamundaProcessError: Code: {:?} Error: {:?} Variables: {:?}", self.code, self.error, self.variables)]
 pub struct CamundaProcessError {
