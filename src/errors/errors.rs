@@ -1,33 +1,17 @@
-use std::{error::Error, fmt};
-
 use reqwest;
 use serde_json;
+use thiserror::Error;
 
 use crate::ProcessVariablesMap;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum CamundaClientError {
-    Reqwest(reqwest::Error),
-    Serde(serde_json::Error),
-    Io(std::io::Error),
-}
-
-impl From<reqwest::Error> for CamundaClientError {
-    fn from(e: reqwest::Error) -> Self {
-        CamundaClientError::Reqwest(e)
-    }
-}
-
-impl From<serde_json::Error> for CamundaClientError {
-    fn from(e: serde_json::Error) -> Self {
-        CamundaClientError::Serde(e)
-    }
-}
-
-impl From<std::io::Error> for CamundaClientError {
-    fn from(e: std::io::Error) -> Self {
-        CamundaClientError::Io(e)
-    }
+    #[error("reqwest::Error:  {}", .0)]
+    Reqwest(#[from] reqwest::Error),
+    #[error("serde_json::Error:  {}", .0)]
+    Serde(#[from] serde_json::Error),
+    #[error("std::io::Error:  {}", .0)]
+    Io(#[from] std::io::Error),
 }
 
 #[derive(Debug)]
