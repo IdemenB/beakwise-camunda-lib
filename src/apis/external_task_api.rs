@@ -183,7 +183,7 @@ impl ExternalTaskApi for ExternalTaskApiClient {
         Ok(())
     }
 
-    async fn extend_lock(
+    pub async fn extend_lock(
         &self,
         id: &str,
         extend_lock_on_external_task_dto: Option<crate::models::ExtendLockOnExternalTaskDto>,
