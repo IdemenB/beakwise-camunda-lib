@@ -9,11 +9,12 @@ pub use url;
 
 pub struct APIClient {
     // condition_api: Box<dyn crate::apis::ConditionApi + Send + Sync + 'static>,
-    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi + Send + Sync + 'static>,
+    pub decision_evaluation_api:
+        Box<dyn crate::apis::DecisionEvaluationApi + Send + Sync + 'static>,
     // deployment_api: Box<dyn crate::apis::DeploymentApi + Send + Sync + 'static>,
     // engine_api: Box<dyn crate::apis::EngineApi + Send + Sync + 'static>,
     // event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi + Send + Sync + 'static>,
-    external_task_api: Box<dyn crate::apis::ExternalTaskApi + Send + Sync + 'static>,
+    pub external_task_api: Box<dyn crate::apis::ExternalTaskApi + Send + Sync + 'static>,
     // message_api: Box<dyn crate::apis::MessageApi + Send + Sync + 'static>,
     // metrics_api: Box<dyn crate::apis::MetricsApi + Send + Sync + 'static>,
     // process_definition_api: Box<dyn crate::apis::ProcessDefinitionApi + Send + Sync + 'static>,
@@ -86,9 +87,9 @@ impl APIClient {
     //     self.event_subscription_api.as_ref()
     // }
 
-    pub fn external_task_api(self) -> &dyn crate::apis::ExternalTaskApi {
-        self.external_task_api
-    }
+    // pub fn external_task_api(self) -> &dyn crate::apis::ExternalTaskApi {
+    //     self.external_task_api
+    // }
 
     // pub fn message_api(&self) -> &dyn crate::apis::MessageApi {
     //     self.message_api.as_ref()
