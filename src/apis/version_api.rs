@@ -16,7 +16,6 @@ pub use serde;
 pub use serde_derive;
 pub use serde_json;
 use std::borrow::Borrow;
-use std::option::Option;
 use std::sync::Arc;
 pub use url;
 
