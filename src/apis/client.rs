@@ -74,9 +74,9 @@ impl APIClient {
     //     self.deployment_api.as_ref()
     // }
 
-    // pub fn decision_evaluation_api(&self) -> &dyn crate::apis::DecisionEvaluationApi {
-    //     self.decision_evaluation_api.as_ref()
-    // }
+    pub fn decision_evaluation_api(&self) -> &dyn crate::apis::DecisionEvaluationApi {
+        self.decision_evaluation_api.as_ref()
+    }
 
     // pub fn engine_api(&self) -> &dyn crate::apis::EngineApi {
     //     self.engine_api.as_ref()
@@ -86,9 +86,9 @@ impl APIClient {
     //     self.event_subscription_api.as_ref()
     // }
 
-    // pub fn external_task_api(&self) -> &dyn crate::apis::ExternalTaskApi {
-    //     self.external_task_api.as_ref()
-    // }
+    pub fn external_task_api(&self) -> &dyn crate::apis::ExternalTaskApi {
+        self.external_task_api
+    }
 
     // pub fn message_api(&self) -> &dyn crate::apis::MessageApi {
     //     self.message_api.as_ref()
