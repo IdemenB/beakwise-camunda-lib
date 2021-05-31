@@ -86,7 +86,7 @@ impl APIClient {
     //     self.event_subscription_api.as_ref()
     // }
 
-    pub fn external_task_api(&self) -> &dyn crate::apis::ExternalTaskApi {
+    pub fn external_task_api(self) -> &dyn crate::apis::ExternalTaskApi {
         self.external_task_api
     }
 
