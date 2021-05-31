@@ -40,7 +40,7 @@ impl DecisionEvaluationApi for DecisionEvaluationApiClient {
 
         let uri_str = format!(
             "{}/decision-definition/key/{}/evaluate",
-            self._config.base_path, key
+            configuration.base_path, key
         );
         let mut req_builder = client.post(uri_str.as_str());
 
