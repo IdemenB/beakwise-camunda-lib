@@ -11,7 +11,7 @@
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ProcessInstanceSuspensionStateAsyncDto {
+pub struct ProcessInstanceSuspensionStateDto {
     /// A Boolean value which indicates whether to activate or suspend a given process instance. When the value is set to true, the given process instance will be suspended and when the value is set to false, the given process instance will be activated.
     #[serde(rename = "suspended", skip_serializing_if = "Option::is_none")]
     pub suspended: Option<bool>,
@@ -30,9 +30,9 @@ pub struct ProcessInstanceSuspensionStateAsyncDto {
     pub historic_process_instance_query: Option<crate::models::HistoricProcessInstanceQueryDto>,
 }
 
-impl ProcessInstanceSuspensionStateAsyncDto {
-    pub fn new() -> ProcessInstanceSuspensionStateAsyncDto {
-        ProcessInstanceSuspensionStateAsyncDto {
+impl ProcessInstanceSuspensionStateDto {
+    pub fn new() -> ProcessInstanceSuspensionStateDto {
+        ProcessInstanceSuspensionStateDto {
             suspended: None,
             process_instance_ids: None,
             process_instance_query: None,

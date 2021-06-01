@@ -142,8 +142,6 @@ pub mod process_instance_query_dto;
 pub use self::process_instance_query_dto::ProcessInstanceQueryDto;
 pub mod process_instance_query_dto_sorting;
 pub use self::process_instance_query_dto_sorting::ProcessInstanceQueryDtoSorting;
-pub mod process_instance_suspension_state_async_dto;
-pub use self::process_instance_suspension_state_async_dto::ProcessInstanceSuspensionStateAsyncDto;
 pub mod process_instance_suspension_state_dto;
 pub use self::process_instance_suspension_state_dto::ProcessInstanceSuspensionStateDto;
 pub mod process_instance_with_variables_dto;

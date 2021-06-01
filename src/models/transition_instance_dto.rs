@@ -22,13 +22,13 @@ pub struct TransitionInstanceDto {
         skip_serializing_if = "Option::is_none"
     )]
     pub parent_activity_instance_id: Option<String>,
-    /// The id of the activity that this instance enters (asyncBefore job) or leaves (asyncAfter job)
+    /// The id of the activity that this instance enters (Before job) or leaves (After job)
     #[serde(rename = "activityId", skip_serializing_if = "Option::is_none")]
     pub activity_id: Option<String>,
-    /// The name of the activity that this instance enters (asyncBefore job) or leaves (asyncAfter job)
+    /// The name of the activity that this instance enters (Before job) or leaves (After job)
     #[serde(rename = "activityName", skip_serializing_if = "Option::is_none")]
     pub activity_name: Option<String>,
-    /// The type of the activity that this instance enters (asyncBefore job) or leaves (asyncAfter job)
+    /// The type of the activity that this instance enters (Before job) or leaves (After job)
     #[serde(rename = "activityType", skip_serializing_if = "Option::is_none")]
     pub activity_type: Option<String>,
     /// The id of the process instance this instance is part of.

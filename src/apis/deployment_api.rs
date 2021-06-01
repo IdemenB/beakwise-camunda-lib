@@ -9,26 +9,25 @@
  */
 
 use std::borrow::Borrow;
+#[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use super::configuration;
-use crate::errors::errors::CamundaClientError;
-use crate::utils::url_encode;
-use async_trait::async_trait;
+use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
+use super::configuration;
+
 pub struct DeploymentApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl DeploymentApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> DeploymentApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> DeploymentApiClient {
         DeploymentApiClient { configuration }
     }
 }
 
-#[async_trait]
 pub trait DeploymentApi {
     fn create_deployment(
         &self,
@@ -39,32 +38,32 @@ pub trait DeploymentApi {
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
-    async fn delete_deployment(
+    fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
     ) -> Result<(), CamundaClientError>;
-    async fn get_deployment(
+    fn get_deployment(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
-    async fn get_deployment_resource(
+    fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
     ) -> Result<crate::models::DeploymentResourceDto, CamundaClientError>;
-    async fn get_deployment_resource_data(
+    fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
     ) -> Result<std::path::PathBuf, CamundaClientError>;
-    async fn get_deployment_resources(
+    fn get_deployment_resources(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError>;
-    async fn get_deployments(
+    fn get_deployments(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -81,7 +80,7 @@ pub trait DeploymentApi {
         first_result: Option<i32>,
         max_results: Option<i32>,
     ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
-    async fn get_deployments_count(
+    fn get_deployments_count(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -94,14 +93,13 @@ pub trait DeploymentApi {
         after: Option<String>,
         before: Option<String>,
     ) -> Result<crate::models::CountResultDto, CamundaClientError>;
-    async fn redeploy(
+    fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
 }
 
-#[async_trait]
 impl DeploymentApi for DeploymentApiClient {
     fn create_deployment(
         &self,
@@ -113,11 +111,7 @@ impl DeploymentApi for DeploymentApiClient {
         data: Option<std::path::PathBuf>,
     ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
-
-        //async Reqwest currently does not support file. That's why here not a clone of the original client is taken.
-        //Instead, a client of blocking type is created from scratch.
-        // let client = &configuration.client;
-        let client = reqwest::blocking::Client::new();
+        let client = &configuration.client;
 
         let uri_str = format!("{}/deployment/create", configuration.base_path);
         let mut req_builder = client.post(uri_str.as_str());
@@ -147,12 +141,12 @@ impl DeploymentApi for DeploymentApiClient {
         req_builder = req_builder.multipart(form);
 
         // send request
-        let resp = req_builder.send()?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json()?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn delete_deployment(
+    fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
@@ -183,13 +177,13 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        resp.error_for_status()?.json().await?;
+        client.execute(req)?.error_for_status()?;
         Ok(())
     }
 
-    async fn get_deployment(
+    fn get_deployment(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError> {
@@ -208,12 +202,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn get_deployment_resource(
+    fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
@@ -234,12 +228,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn get_deployment_resource_data(
+    fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
@@ -260,12 +254,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn get_deployment_resources(
+    fn get_deployment_resources(
         &self,
         id: &str,
     ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError> {
@@ -284,12 +278,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn get_deployments(
+    fn get_deployments(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -360,11 +354,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
-    async fn get_deployments_count(
+
+    fn get_deployments_count(
         &self,
         id: Option<&str>,
         name: Option<&str>,
@@ -419,12 +414,12 @@ impl DeploymentApi for DeploymentApiClient {
         }
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    async fn redeploy(
+    fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
@@ -445,8 +440,8 @@ impl DeploymentApi for DeploymentApiClient {
         req_builder = req_builder.json(&redeployment_dto);
 
         // send request
-        let resp = req_builder.send().await?;
+        let req = req_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 }

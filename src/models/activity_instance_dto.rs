@@ -46,7 +46,7 @@ pub struct ActivityInstanceDto {
         skip_serializing_if = "Option::is_none"
     )]
     pub child_activity_instances: Option<Vec<crate::models::ActivityInstanceDto>>,
-    /// A list of child transition instances. A transition instance represents an execution waiting in an asynchronous continuation.
+    /// A list of child transition instances. A transition instance represents an execution waiting in an hronous continuation.
     #[serde(
         rename = "childTransitionInstances",
         skip_serializing_if = "Option::is_none"

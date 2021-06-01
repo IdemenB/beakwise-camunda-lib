@@ -1,7 +1,5 @@
-use async_trait::async_trait;
 use std::borrow::Borrow;
-use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
 use super::configuration;
 use crate::errors::errors::CamundaClientError;
@@ -10,27 +8,25 @@ use crate::models::DecisionEvaluationDto;
 use crate::utils::url_encode;
 
 pub struct DecisionEvaluationApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl DecisionEvaluationApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> DecisionEvaluationApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> DecisionEvaluationApiClient {
         DecisionEvaluationApiClient { configuration }
     }
 }
 
-#[async_trait]
 pub trait DecisionEvaluationApi {
-    async fn evaluate_decision(
+    fn evaluate_decision(
         &self,
         key: &str,
         decision_evaluation_dto: DecisionEvaluationDto,
     ) -> Result<DecisionDto, CamundaClientError>;
 }
 
-#[async_trait]
 impl DecisionEvaluationApi for DecisionEvaluationApiClient {
-    async fn evaluate_decision(
+    fn evaluate_decision(
         &self,
         key: &str,
         decision_evaluation_dto: DecisionEvaluationDto,
@@ -40,18 +36,19 @@ impl DecisionEvaluationApi for DecisionEvaluationApiClient {
 
         let uri_str = format!(
             "{}/decision-definition/key/{}/evaluate",
-            configuration.base_path, key
+            configuration.base_path,
+            url_encode::url_encode(key)
         );
-        let mut req_builder = client.post(uri_str.as_str());
+        let mut resp_builder = client.post(uri_str.as_str());
 
         if let Some(ref user_agent) = configuration.user_agent {
-            req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+            resp_builder = resp_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
         }
-        req_builder = req_builder.json(&decision_evaluation_dto);
+        resp_builder = resp_builder.json(&decision_evaluation_dto);
 
-        // send request
-        let resp = req_builder.send().await?;
+        // send respuest
+        let resp = resp_builder.build()?;
 
-        Ok(resp.error_for_status()?.json().await?)
+        Ok(client.execute(resp)?.error_for_status()?.json()?)
     }
 }

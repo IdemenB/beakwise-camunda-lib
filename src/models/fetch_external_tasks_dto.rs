@@ -22,10 +22,10 @@ pub struct FetchExternalTasksDto {
     pub use_priority: Option<bool>,
     /// The [Long Polling](https://docs.camunda.org/manual/7.13/user-guide/process-engine/external-tasks/#long-polling-to-fetch-and-lock-external-tasks) timeout in milliseconds.  **Note:** The value cannot be set larger than 1.800.000 milliseconds (corresponds to 30 minutes).
     #[serde(
-        rename = "asyncResponseTimeout",
+        rename = "ResponseTimeout",
         skip_serializing_if = "Option::is_none"
     )]
-    pub async_response_timeout: Option<i64>,
+    pub _response_timeout: Option<i64>,
     /// A JSON array of topic objects for which external tasks should be fetched. The returned tasks may be arbitrarily distributed among these topics. Each topic object has the following properties:
     #[serde(rename = "topics", skip_serializing_if = "Option::is_none")]
     pub topics: Option<Vec<crate::models::FetchExternalTaskTopicDto>>,
@@ -34,14 +34,14 @@ pub struct FetchExternalTasksDto {
 impl FetchExternalTasksDto {
     pub fn new(
         worker_id: String,
-        async_response_timeout: i64,
+        _response_timeout: i64,
         topics: Vec<crate::models::FetchExternalTaskTopicDto>,
     ) -> FetchExternalTasksDto {
         FetchExternalTasksDto {
             worker_id,
             max_tasks: Some(1),
             use_priority: None,
-            async_response_timeout: Some(async_response_timeout),
+            _response_timeout: Some(_response_timeout),
             topics: Some(topics),
         }
     }

@@ -3,7 +3,7 @@ use std::time::Duration;
 pub struct Configuration {
     pub base_path: String,
     pub user_agent: Option<String>,
-    pub client: reqwest::Client,
+    pub client: reqwest::blocking::Client,
     pub basic_auth: Option<BasicAuth>,
     pub oauth_access_token: Option<String>,
     pub bearer_access_token: Option<String>,
@@ -29,15 +29,15 @@ impl Default for Configuration {
         Configuration {
             base_path: "http://localhost:8080/engine-rest".to_owned(),
             user_agent: Some("Beakwise-Beaksurance-Camunda-Client/rust/1.0".to_owned()),
-            client: reqwest::Client::builder()
+            client: reqwest::blocking::Client::builder()
                 .timeout(Duration::from_secs(90))
                 .connect_timeout(Duration::from_secs(10))
-                // .https_only(true)
+                // .https_only(true) //TODO must be activated for production
                 .pool_idle_timeout(Duration::from_secs(60000))
                 .tcp_keepalive(Duration::from_secs(6000))
                 .pool_max_idle_per_host(100)
                 .build()
-                .expect("Cannot built a Client!"),
+                .expect("Cannot build a respwest::Client!"),
             basic_auth: None,
             oauth_access_token: None,
             bearer_access_token: None,
