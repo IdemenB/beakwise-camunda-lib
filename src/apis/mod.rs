@@ -1,3 +1,4 @@
+use crate::ProcessVariablesMap;
 use reqwest;
 use serde_json;
 use thiserror::Error;
