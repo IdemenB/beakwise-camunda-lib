@@ -12,6 +12,22 @@ pub enum CamundaClientError {
     Io(#[from] std::io::Error),
 }
 
+#[derive(Debug, Error)]
+#[error("CamundaProcessError: Code: {:?} Error: {:?} Variables: {:?}", self.code, self.error, self.variables)]
+pub struct CamundaProcessError {
+    pub code: String,
+    pub error: String,
+    pub variables: Option<ProcessVariablesMap>,
+}
+
+#[derive(Debug, Error)]
+#[error("CamundaProcessFailure: Error: {:?} Retries: {:?} Retry Timeout: {:?} ms", self.error, self.retries, self.retry_timeout)]
+pub struct CamundaProcessFailure {
+    pub error: String,
+    pub retries: i32,
+    pub retry_timeout: i64,
+}
+
 pub fn urlencode<T: AsRef<str>>(s: T) -> String {
     ::url::form_urlencoded::byte_serialize(s.as_ref().as_bytes()).collect()
 }
