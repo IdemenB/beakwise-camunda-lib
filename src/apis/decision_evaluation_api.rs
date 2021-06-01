@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::configuration;
 use crate::errors::errors::CamundaClientError;
@@ -8,11 +8,11 @@ use crate::models::DecisionEvaluationDto;
 use crate::utils::url_encode;
 
 pub struct DecisionEvaluationApiClient {
-    configuration: Rc<configuration::Configuration>,
+    configuration: Arc<configuration::Configuration>,
 }
 
 impl DecisionEvaluationApiClient {
-    pub fn new(configuration: Rc<configuration::Configuration>) -> DecisionEvaluationApiClient {
+    pub fn new(configuration: Arc<configuration::Configuration>) -> DecisionEvaluationApiClient {
         DecisionEvaluationApiClient { configuration }
     }
 }

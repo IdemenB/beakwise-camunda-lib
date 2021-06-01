@@ -11,7 +11,7 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
@@ -19,11 +19,11 @@ use reqwest;
 use super::configuration;
 
 pub struct TaskCommentApiClient {
-    configuration: Rc<configuration::Configuration>,
+    configuration: Arc<configuration::Configuration>,
 }
 
 impl TaskCommentApiClient {
-    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskCommentApiClient {
+    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskCommentApiClient {
         TaskCommentApiClient { configuration }
     }
 }
