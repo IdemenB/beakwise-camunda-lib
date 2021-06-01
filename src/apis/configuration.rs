@@ -14,6 +14,7 @@ pub struct Configuration {
 
 pub type BasicAuth = (String, Option<String>);
 
+#[derive(Debug)]
 pub struct ApiKey {
     pub prefix: Option<String>,
     pub key: String,
