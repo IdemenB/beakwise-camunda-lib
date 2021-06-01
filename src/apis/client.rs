@@ -1,68 +1,63 @@
-use super::configuration::Configuration;
-pub use reqwest;
-pub use serde;
-pub use serde_derive;
-pub use serde_json;
-pub use url;
+use std::rc::Rc;
 
-use std::sync::Arc;
+use super::configuration::Configuration;
 
 pub struct APIClient {
-    condition_api: Box<dyn crate::apis::ConditionApi + Send + Sync>,
-    deployment_api: Box<dyn crate::apis::DeploymentApi + Send + Sync>,
-    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi + Send + Sync>,
-    engine_api: Box<dyn crate::apis::EngineApi + Send + Sync>,
-    event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi + Send + Sync>,
-    external_task_api: Box<dyn crate::apis::ExternalTaskApi + Send + Sync>,
-    message_api: Box<dyn crate::apis::MessageApi + Send + Sync>,
-    metrics_api: Box<dyn crate::apis::MetricsApi + Send + Sync>,
-    process_definition_api: Box<dyn crate::apis::ProcessDefinitionApi + Send + Sync>,
-    process_instance_api: Box<dyn crate::apis::ProcessInstanceApi + Send + Sync>,
-    schema_log_api: Box<dyn crate::apis::SchemaLogApi + Send + Sync>,
-    signal_api: Box<dyn crate::apis::SignalApi + Send + Sync>,
-    task_api: Box<dyn crate::apis::TaskApi + Send + Sync>,
-    task_attachment_api: Box<dyn crate::apis::TaskAttachmentApi + Send + Sync>,
-    task_comment_api: Box<dyn crate::apis::TaskCommentApi + Send + Sync>,
-    task_identity_link_api: Box<dyn crate::apis::TaskIdentityLinkApi + Send + Sync>,
-    task_local_variable_api: Box<dyn crate::apis::TaskLocalVariableApi + Send + Sync>,
-    task_variable_api: Box<dyn crate::apis::TaskVariableApi + Send + Sync>,
-    version_api: Box<dyn crate::apis::VersionApi + Send + Sync>,
+    condition_api: Box<dyn crate::apis::ConditionApi>,
+    deployment_api: Box<dyn crate::apis::DeploymentApi>,
+    decision_evaluation_api: Box<dyn crate::apis::DecisionEvaluationApi>,
+    engine_api: Box<dyn crate::apis::EngineApi>,
+    event_subscription_api: Box<dyn crate::apis::EventSubscriptionApi>,
+    external_task_api: Box<dyn crate::apis::ExternalTaskApi>,
+    message_api: Box<dyn crate::apis::MessageApi>,
+    metrics_api: Box<dyn crate::apis::MetricsApi>,
+    process_definition_api: Box<dyn crate::apis::ProcessDefinitionApi>,
+    process_instance_api: Box<dyn crate::apis::ProcessInstanceApi>,
+    schema_log_api: Box<dyn crate::apis::SchemaLogApi>,
+    signal_api: Box<dyn crate::apis::SignalApi>,
+    task_api: Box<dyn crate::apis::TaskApi>,
+    task_attachment_api: Box<dyn crate::apis::TaskAttachmentApi>,
+    task_comment_api: Box<dyn crate::apis::TaskCommentApi>,
+    task_identity_link_api: Box<dyn crate::apis::TaskIdentityLinkApi>,
+    task_local_variable_api: Box<dyn crate::apis::TaskLocalVariableApi>,
+    task_variable_api: Box<dyn crate::apis::TaskVariableApi>,
+    version_api: Box<dyn crate::apis::VersionApi>,
 }
 
 impl APIClient {
     pub fn new(configuration: Configuration) -> APIClient {
-        let arc = Arc::new(configuration);
+        let rc = Rc::new(configuration);
 
         APIClient {
-            condition_api: Box::new(crate::apis::ConditionApiClient::new(arc.clone())),
+            condition_api: Box::new(crate::apis::ConditionApiClient::new(rc.clone())),
             decision_evaluation_api: Box::new(crate::apis::DecisionEvaluationApiClient::new(
-                arc.clone(),
+                rc.clone(),
             )),
-            deployment_api: Box::new(crate::apis::DeploymentApiClient::new(arc.clone())),
-            engine_api: Box::new(crate::apis::EngineApiClient::new(arc.clone())),
+            deployment_api: Box::new(crate::apis::DeploymentApiClient::new(rc.clone())),
+            engine_api: Box::new(crate::apis::EngineApiClient::new(rc.clone())),
             event_subscription_api: Box::new(crate::apis::EventSubscriptionApiClient::new(
-                arc.clone(),
+                rc.clone(),
             )),
-            external_task_api: Box::new(crate::apis::ExternalTaskApiClient::new(arc.clone())),
-            message_api: Box::new(crate::apis::MessageApiClient::new(arc.clone())),
-            metrics_api: Box::new(crate::apis::MetricsApiClient::new(arc.clone())),
+            external_task_api: Box::new(crate::apis::ExternalTaskApiClient::new(rc.clone())),
+            message_api: Box::new(crate::apis::MessageApiClient::new(rc.clone())),
+            metrics_api: Box::new(crate::apis::MetricsApiClient::new(rc.clone())),
             process_definition_api: Box::new(crate::apis::ProcessDefinitionApiClient::new(
-                arc.clone(),
+                rc.clone(),
             )),
-            process_instance_api: Box::new(crate::apis::ProcessInstanceApiClient::new(arc.clone())),
-            schema_log_api: Box::new(crate::apis::SchemaLogApiClient::new(arc.clone())),
-            signal_api: Box::new(crate::apis::SignalApiClient::new(arc.clone())),
-            task_api: Box::new(crate::apis::TaskApiClient::new(arc.clone())),
-            task_attachment_api: Box::new(crate::apis::TaskAttachmentApiClient::new(arc.clone())),
-            task_comment_api: Box::new(crate::apis::TaskCommentApiClient::new(arc.clone())),
+            process_instance_api: Box::new(crate::apis::ProcessInstanceApiClient::new(rc.clone())),
+            schema_log_api: Box::new(crate::apis::SchemaLogApiClient::new(rc.clone())),
+            signal_api: Box::new(crate::apis::SignalApiClient::new(rc.clone())),
+            task_api: Box::new(crate::apis::TaskApiClient::new(rc.clone())),
+            task_attachment_api: Box::new(crate::apis::TaskAttachmentApiClient::new(rc.clone())),
+            task_comment_api: Box::new(crate::apis::TaskCommentApiClient::new(rc.clone())),
             task_identity_link_api: Box::new(crate::apis::TaskIdentityLinkApiClient::new(
-                arc.clone(),
+                rc.clone(),
             )),
             task_local_variable_api: Box::new(crate::apis::TaskLocalVariableApiClient::new(
-                arc.clone(),
+                rc.clone(),
             )),
-            task_variable_api: Box::new(crate::apis::TaskVariableApiClient::new(arc.clone())),
-            version_api: Box::new(crate::apis::VersionApiClient::new(arc.clone())),
+            task_variable_api: Box::new(crate::apis::TaskVariableApiClient::new(rc.clone())),
+            version_api: Box::new(crate::apis::VersionApiClient::new(rc.clone())),
         }
     }
 
@@ -70,12 +65,11 @@ impl APIClient {
         self.condition_api.as_ref()
     }
 
-    pub fn deployment_api(&self) -> &dyn crate::apis::DeploymentApi {
-        self.deployment_api.as_ref()
-    }
-
     pub fn decision_evaluation_api(&self) -> &dyn crate::apis::DecisionEvaluationApi {
         self.decision_evaluation_api.as_ref()
+    }
+    pub fn deployment_api(&self) -> &dyn crate::apis::DeploymentApi {
+        self.deployment_api.as_ref()
     }
 
     pub fn engine_api(&self) -> &dyn crate::apis::EngineApi {

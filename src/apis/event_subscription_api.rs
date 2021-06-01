@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct EventSubscriptionApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl EventSubscriptionApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> EventSubscriptionApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> EventSubscriptionApiClient {
         EventSubscriptionApiClient { configuration }
     }
 }
@@ -44,7 +43,7 @@ pub trait EventSubscriptionApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::EventSubscriptionDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::EventSubscriptionDto>, crate::apis::CamundaClientError>;
     fn get_event_subscriptions_count(
         &self,
         event_subscription_id: Option<&str>,
@@ -56,7 +55,7 @@ pub trait EventSubscriptionApi {
         tenant_id_in: Option<&str>,
         without_tenant_id: Option<bool>,
         include_event_subscriptions_without_tenant_id: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
 }
 
 impl EventSubscriptionApi for EventSubscriptionApiClient {
@@ -75,7 +74,7 @@ impl EventSubscriptionApi for EventSubscriptionApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::EventSubscriptionDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::EventSubscriptionDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -143,7 +142,7 @@ impl EventSubscriptionApi for EventSubscriptionApiClient {
         tenant_id_in: Option<&str>,
         without_tenant_id: Option<bool>,
         include_event_subscriptions_without_tenant_id: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

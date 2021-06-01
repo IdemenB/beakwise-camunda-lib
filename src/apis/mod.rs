@@ -1,3 +1,21 @@
+use reqwest;
+use serde_json;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum CamundaClientError {
+    #[error("reqwest::Error:  {}", .0)]
+    Reqwest(#[from] reqwest::Error),
+    #[error("serde_json::Error:  {}", .0)]
+    Serde(#[from] serde_json::Error),
+    #[error("std::io::Error:  {}", .0)]
+    Io(#[from] std::io::Error),
+}
+
+pub fn urlencode<T: AsRef<str>>(s: T) -> String {
+    ::url::form_urlencoded::byte_serialize(s.as_ref().as_bytes()).collect()
+}
+
 mod condition_api;
 pub use self::condition_api::{ConditionApi, ConditionApiClient};
 mod decision_evaluation_api;

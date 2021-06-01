@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct SchemaLogApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl SchemaLogApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> SchemaLogApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> SchemaLogApiClient {
         SchemaLogApiClient { configuration }
     }
 }
@@ -34,13 +33,13 @@ pub trait SchemaLogApi {
         version: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, crate::apis::CamundaClientError>;
     fn query_schema_log(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         schema_log_query_dto: Option<crate::models::SchemaLogQueryDto>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, crate::apis::CamundaClientError>;
 }
 
 impl SchemaLogApi for SchemaLogApiClient {
@@ -49,7 +48,7 @@ impl SchemaLogApi for SchemaLogApiClient {
         version: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -80,7 +79,7 @@ impl SchemaLogApi for SchemaLogApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         schema_log_query_dto: Option<crate::models::SchemaLogQueryDto>,
-    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::SchemaLogEntryDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

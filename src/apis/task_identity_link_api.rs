@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct TaskIdentityLinkApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl TaskIdentityLinkApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskIdentityLinkApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskIdentityLinkApiClient {
         TaskIdentityLinkApiClient { configuration }
     }
 }
@@ -33,17 +32,17 @@ pub trait TaskIdentityLinkApi {
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delete_identity_link(
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn get_identity_links(
         &self,
         id: &str,
         _type: Option<&str>,
-    ) -> Result<Vec<crate::models::IdentityLinkDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::IdentityLinkDto>, crate::apis::CamundaClientError>;
 }
 
 impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
@@ -51,14 +50,14 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/identity-links",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -78,14 +77,14 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         &self,
         id: &str,
         identity_link_dto: Option<crate::models::IdentityLinkDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/identity-links/delete",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -105,14 +104,14 @@ impl TaskIdentityLinkApi for TaskIdentityLinkApiClient {
         &self,
         id: &str,
         _type: Option<&str>,
-    ) -> Result<Vec<crate::models::IdentityLinkDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::IdentityLinkDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/identity-links",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 

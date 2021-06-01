@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct ProcessDefinitionApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl ProcessDefinitionApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> ProcessDefinitionApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> ProcessDefinitionApiClient {
         ProcessDefinitionApiClient { configuration }
     }
 }
@@ -35,14 +34,14 @@ pub trait ProcessDefinitionApi {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delete_process_definitions_by_key(
         &self,
         key: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delete_process_definitions_by_key_and_tenant_id(
         &self,
         key: &str,
@@ -50,21 +49,21 @@ pub trait ProcessDefinitionApi {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn get_activity_statistics(
         &self,
         id: &str,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>;
     fn get_activity_statistics_by_process_definition_key(
         &self,
         key: &str,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>;
     fn get_activity_statistics_by_process_definition_key_and_tenant_id(
         &self,
         key: &str,
@@ -72,63 +71,69 @@ pub trait ProcessDefinitionApi {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError>;
-    fn get_deployed_start_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>;
+    fn get_deployed_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_deployed_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_deployed_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_latest_process_definition_by_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError>;
     fn get_process_definition(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError>;
     fn get_process_definition_bpmn20_xml(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError>;
     fn get_process_definition_bpmn20_xml_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError>;
     fn get_process_definition_bpmn20_xml_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError>;
     fn get_process_definition_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError>;
     fn get_process_definition_diagram(
         &self,
         id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_process_definition_diagram_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_process_definition_diagram_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_process_definition_statistics(
         &self,
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
         root_incidents: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, CamundaClientError>;
+    ) -> Result<
+        Vec<crate::models::ProcessDefinitionStatisticsResultDto>,
+        crate::apis::CamundaClientError,
+    >;
     fn get_process_definitions(
         &self,
         process_definition_id: Option<&str>,
@@ -167,7 +172,7 @@ pub trait ProcessDefinitionApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, crate::apis::CamundaClientError>;
     fn get_process_definitions_count(
         &self,
         process_definition_id: Option<&str>,
@@ -202,27 +207,33 @@ pub trait ProcessDefinitionApi {
         startable_in_tasklist: Option<bool>,
         not_startable_in_tasklist: Option<bool>,
         startable_permission_check: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
-    fn get_rendered_start_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
+    fn get_rendered_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_rendered_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_rendered_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
-    fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
+    fn get_start_form(
+        &self,
+        id: &str,
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError>;
     fn get_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::FormDto, CamundaClientError>;
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError>;
     fn get_start_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::FormDto, CamundaClientError>;
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError>;
     fn get_start_form_variables(
         &self,
         id: &str,
@@ -230,7 +241,7 @@ pub trait ProcessDefinitionApi {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn get_start_form_variables_by_key(
         &self,
@@ -239,7 +250,7 @@ pub trait ProcessDefinitionApi {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn get_start_form_variables_by_key_and_tenant_id(
         &self,
@@ -249,86 +260,86 @@ pub trait ProcessDefinitionApi {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn restart_process_instance(
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn restart_process_instance_async_operation(
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn start_process_instance(
         &self,
         id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>;
     fn start_process_instance_by_key(
         &self,
         key: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>;
     fn start_process_instance_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>;
     fn submit_form(
         &self,
         id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError>;
     fn submit_form_by_key(
         &self,
         key: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError>;
     fn submit_form_by_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError>;
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError>;
     fn update_history_time_to_live_by_process_definition_id(
         &self,
         id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_history_time_to_live_by_process_definition_key(
         &self,
         key: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_history_time_to_live_by_process_definition_key_and_tenant_id(
         &self,
         key: &str,
         tenant_id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_process_definition_suspension_state(
         &self,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_process_definition_suspension_state_by_id(
         &self,
         id: &str,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_process_definition_suspension_state_by_key(
         &self,
         key: &str,
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_process_definition_suspension_state_by_key_and_tenant_id(
         &self,
         key: &str,
@@ -336,7 +347,7 @@ pub trait ProcessDefinitionApi {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
 }
 
 impl ProcessDefinitionApi for ProcessDefinitionApiClient {
@@ -346,14 +357,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -383,14 +394,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -421,15 +432,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -459,14 +470,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/statistics",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -495,14 +507,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/statistics",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -532,15 +545,16 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         failed_jobs: Option<bool>,
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
-    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ActivityStatisticsResultDto>, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/statistics",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -563,14 +577,17 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_deployed_start_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
+    fn get_deployed_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/deployed-start-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -587,14 +604,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_deployed_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/deployed-start-form",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -612,15 +629,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/deployed-start-form",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -638,15 +655,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -663,14 +680,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -687,14 +704,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition_bpmn20_xml(
         &self,
         id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/xml",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -711,14 +728,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition_bpmn20_xml_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/xml",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -736,15 +753,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::ProcessDefinitionDiagramDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDiagramDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/xml",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -761,14 +778,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::ProcessDefinitionDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessDefinitionDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -785,14 +802,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition_diagram(
         &self,
         id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/diagram",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -809,14 +826,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_process_definition_diagram_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/diagram",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -834,15 +851,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/diagram",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -862,7 +879,10 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         incidents: Option<bool>,
         incidents_for_type: Option<&str>,
         root_incidents: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionStatisticsResultDto>, CamundaClientError> {
+    ) -> Result<
+        Vec<crate::models::ProcessDefinitionStatisticsResultDto>,
+        crate::apis::CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -929,7 +949,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ProcessDefinitionDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1089,7 +1109,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         startable_in_tasklist: Option<bool>,
         not_startable_in_tasklist: Option<bool>,
         startable_permission_check: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1203,14 +1223,17 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_rendered_start_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
+    fn get_rendered_start_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/rendered-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1227,14 +1250,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_rendered_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/rendered-form",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1252,15 +1275,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/rendered-form",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1274,14 +1297,17 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_start_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError> {
+    fn get_start_form(
+        &self,
+        id: &str,
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/startForm",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1298,14 +1324,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
     fn get_start_form_by_key(
         &self,
         key: &str,
-    ) -> Result<crate::models::FormDto, CamundaClientError> {
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/startForm",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1323,15 +1349,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         tenant_id: &str,
-    ) -> Result<crate::models::FormDto, CamundaClientError> {
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/startForm",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1352,7 +1378,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -1360,7 +1386,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         let uri_str = format!(
             "{}/process-definition/{id}/form-variables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1387,7 +1413,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -1395,7 +1421,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         let uri_str = format!(
             "{}/process-definition/key/{key}/form-variables",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1423,7 +1449,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -1431,8 +1457,8 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/form-variables",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -1456,14 +1482,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/restart",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1483,14 +1509,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         restart_process_instance_dto: Option<crate::models::RestartProcessInstanceDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/restart-async",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1509,14 +1535,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/start",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1535,14 +1562,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/start",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1562,15 +1590,16 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         start_process_instance_dto: Option<crate::models::StartProcessInstanceDto>,
-    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceWithVariablesDto, crate::apis::CamundaClientError>
+    {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/start",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1589,14 +1618,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/submit-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1615,14 +1644,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/submit-form",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1642,15 +1671,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         start_process_instance_form_dto: Option<crate::models::StartProcessInstanceFormDto>,
-    ) -> Result<crate::models::ProcessInstanceDto, CamundaClientError> {
+    ) -> Result<crate::models::ProcessInstanceDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/submit-form",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1669,14 +1698,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/history-time-to-live",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -1696,14 +1725,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         &self,
         key: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/history-time-to-live",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -1724,15 +1753,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         key: &str,
         tenant_id: &str,
         history_time_to_live_dto: Option<crate::models::HistoryTimeToLiveDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/history-time-to-live",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -1753,7 +1782,7 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1778,14 +1807,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/{id}/suspended",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -1807,14 +1836,14 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/suspended",
             configuration.base_path,
-            key = url_encode::url_encode(key)
+            key = crate::apis::urlencode(key)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -1837,15 +1866,15 @@ impl ProcessDefinitionApi for ProcessDefinitionApiClient {
         process_definition_suspension_state_dto: Option<
             crate::models::ProcessDefinitionSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-definition/key/{key}/tenant/{tenant_id}/suspended",
             configuration.base_path,
-            key = url_encode::url_encode(key),
-            tenant_id = url_encode::url_encode(tenant_id)
+            key = crate::apis::urlencode(key),
+            tenant_id = crate::apis::urlencode(tenant_id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 

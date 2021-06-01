@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct ProcessInstanceApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl ProcessInstanceApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> ProcessInstanceApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> ProcessInstanceApiClient {
         ProcessInstanceApiClient { configuration }
     }
 }
@@ -32,7 +31,7 @@ pub trait ProcessInstanceApi {
     fn delete_async_historic_query_based(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn delete_process_instance(
         &self,
         id: &str,
@@ -40,38 +39,38 @@ pub trait ProcessInstanceApi {
         skip_io_mappings: Option<bool>,
         skip_subprocesses: Option<bool>,
         fail_if_not_exists: Option<bool>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delete_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delete_process_instances_async_operation(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn get_activity_instance_tree(
         &self,
         id: &str,
-    ) -> Result<crate::models::ActivityInstanceDto, CamundaClientError>;
+    ) -> Result<crate::models::ActivityInstanceDto, crate::apis::CamundaClientError>;
     fn get_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, CamundaClientError>;
+    ) -> Result<crate::models::VariableValueDto, crate::apis::CamundaClientError>;
     fn get_process_instance_variable_binary(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_process_instance_variables(
         &self,
         id: &str,
         deserialize_value: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn get_process_instances(
         &self,
@@ -108,7 +107,7 @@ pub trait ProcessInstanceApi {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, crate::apis::CamundaClientError>;
     fn get_process_instances_count(
         &self,
         process_instance_ids: Option<&str>,
@@ -140,77 +139,77 @@ pub trait ProcessInstanceApi {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
     fn modify_process_instance(
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn modify_process_instance_async_operation(
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn modify_process_instance_variables(
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn query_process_instances(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, crate::apis::CamundaClientError>;
     fn query_process_instances_count(
         &self,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
     fn set_process_instance_variable(
         &self,
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn set_process_instance_variable_binary(
         &self,
         id: &str,
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn set_retries_by_process(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn set_retries_by_process_historic_query_based(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn update_suspension_state(
         &self,
         process_instance_suspension_state_dto: Option<
             crate::models::ProcessInstanceSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn update_suspension_state_async_operation(
         &self,
         process_instance_suspension_state_async_dto: Option<
-            crate::models::ProcessInstanceSuspensionStateDto,
+            crate::models::ProcessInstanceSuspensionStateAsyncDto,
         >,
-    ) -> Result<crate::models::BatchDto, CamundaClientError>;
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError>;
     fn update_suspension_state_by_id(
         &self,
         id: &str,
         suspension_state_dto: Option<crate::models::SuspensionStateDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
 }
 
 impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn delete_async_historic_query_based(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -238,14 +237,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         skip_io_mappings: Option<bool>,
         skip_subprocesses: Option<bool>,
         fail_if_not_exists: Option<bool>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -276,15 +275,15 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -302,7 +301,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn delete_process_instances_async_operation(
         &self,
         delete_process_instances_dto: Option<crate::models::DeleteProcessInstancesDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -323,14 +322,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn get_activity_instance_tree(
         &self,
         id: &str,
-    ) -> Result<crate::models::ActivityInstanceDto, CamundaClientError> {
+    ) -> Result<crate::models::ActivityInstanceDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/activity-instances",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -349,15 +348,15 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, CamundaClientError> {
+    ) -> Result<crate::models::VariableValueDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -378,15 +377,15 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables/{varName}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -406,7 +405,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         deserialize_value: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -414,7 +413,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         let uri_str = format!(
             "{}/process-instance/{id}/variables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -466,7 +465,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -614,7 +613,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         variables: Option<&str>,
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -723,14 +722,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/modification",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -750,14 +749,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         process_instance_modification_dto: Option<crate::models::ProcessInstanceModificationDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/modification-async",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -776,14 +775,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -804,7 +803,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<Vec<crate::models::ProcessInstanceDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ProcessInstanceDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -831,7 +830,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn query_process_instances_count(
         &self,
         process_instance_query_dto: Option<crate::models::ProcessInstanceQueryDto>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -854,15 +853,15 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -884,15 +883,15 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/variables/{varName}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -918,7 +917,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn set_retries_by_process(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -939,7 +938,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn set_retries_by_process_historic_query_based(
         &self,
         set_job_retries_by_process_dto: Option<crate::models::SetJobRetriesByProcessDto>,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -965,7 +964,7 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         process_instance_suspension_state_dto: Option<
             crate::models::ProcessInstanceSuspensionStateDto,
         >,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -987,9 +986,9 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
     fn update_suspension_state_async_operation(
         &self,
         process_instance_suspension_state_async_dto: Option<
-            crate::models::ProcessInstanceSuspensionStateDto,
+            crate::models::ProcessInstanceSuspensionStateAsyncDto,
         >,
-    ) -> Result<crate::models::BatchDto, CamundaClientError> {
+    ) -> Result<crate::models::BatchDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1014,14 +1013,14 @@ impl ProcessInstanceApi for ProcessInstanceApiClient {
         &self,
         id: &str,
         suspension_state_dto: Option<crate::models::SuspensionStateDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/process-instance/{id}/suspended",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 

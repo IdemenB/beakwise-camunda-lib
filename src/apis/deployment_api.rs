@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct DeploymentApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl DeploymentApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> DeploymentApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> DeploymentApiClient {
         DeploymentApiClient { configuration }
     }
 }
@@ -37,32 +36,32 @@ pub trait DeploymentApi {
         enable_duplicate_filtering: Option<bool>,
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, crate::apis::CamundaClientError>;
     fn delete_deployment(
         &self,
         id: &str,
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn get_deployment(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::DeploymentDto>, crate::apis::CamundaClientError>;
     fn get_deployment_resource(
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<crate::models::DeploymentResourceDto, CamundaClientError>;
+    ) -> Result<crate::models::DeploymentResourceDto, crate::apis::CamundaClientError>;
     fn get_deployment_resource_data(
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_deployment_resources(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::DeploymentResourceDto>, crate::apis::CamundaClientError>;
     fn get_deployments(
         &self,
         id: Option<&str>,
@@ -79,7 +78,7 @@ pub trait DeploymentApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::DeploymentDto>, crate::apis::CamundaClientError>;
     fn get_deployments_count(
         &self,
         id: Option<&str>,
@@ -92,12 +91,12 @@ pub trait DeploymentApi {
         include_deployments_without_tenant_id: Option<bool>,
         after: Option<String>,
         before: Option<String>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
     fn redeploy(
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError>;
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, crate::apis::CamundaClientError>;
 }
 
 impl DeploymentApi for DeploymentApiClient {
@@ -109,7 +108,7 @@ impl DeploymentApi for DeploymentApiClient {
         enable_duplicate_filtering: Option<bool>,
         deployment_name: Option<&str>,
         data: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError> {
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -152,14 +151,14 @@ impl DeploymentApi for DeploymentApiClient {
         cascade: Option<bool>,
         skip_custom_listeners: Option<bool>,
         skip_io_mappings: Option<bool>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -186,14 +185,14 @@ impl DeploymentApi for DeploymentApiClient {
     fn get_deployment(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::DeploymentDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -211,15 +210,15 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<crate::models::DeploymentResourceDto, CamundaClientError> {
+    ) -> Result<crate::models::DeploymentResourceDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}/resources/{resourceId}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            resourceId = url_encode::url_encode(resource_id)
+            id = crate::apis::urlencode(id),
+            resourceId = crate::apis::urlencode(resource_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -237,15 +236,15 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         resource_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}/resources/{resourceId}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            resourceId = url_encode::url_encode(resource_id)
+            id = crate::apis::urlencode(id),
+            resourceId = crate::apis::urlencode(resource_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -262,14 +261,14 @@ impl DeploymentApi for DeploymentApiClient {
     fn get_deployment_resources(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::DeploymentResourceDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::DeploymentResourceDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}/resources",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -299,7 +298,7 @@ impl DeploymentApi for DeploymentApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::DeploymentDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::DeploymentDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -371,7 +370,7 @@ impl DeploymentApi for DeploymentApiClient {
         include_deployments_without_tenant_id: Option<bool>,
         after: Option<String>,
         before: Option<String>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -423,14 +422,14 @@ impl DeploymentApi for DeploymentApiClient {
         &self,
         id: &str,
         redeployment_dto: Option<crate::models::RedeploymentDto>,
-    ) -> Result<crate::models::DeploymentWithDefinitionsDto, CamundaClientError> {
+    ) -> Result<crate::models::DeploymentWithDefinitionsDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/deployment/{id}/redeploy",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 

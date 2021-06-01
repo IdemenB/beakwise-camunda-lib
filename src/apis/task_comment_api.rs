@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct TaskCommentApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl TaskCommentApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskCommentApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskCommentApiClient {
         TaskCommentApiClient { configuration }
     }
 }
@@ -33,13 +32,16 @@ pub trait TaskCommentApi {
         &self,
         id: &str,
         comment_dto: Option<crate::models::CommentDto>,
-    ) -> Result<crate::models::CommentDto, CamundaClientError>;
+    ) -> Result<crate::models::CommentDto, crate::apis::CamundaClientError>;
     fn get_comment(
         &self,
         id: &str,
         comment_id: &str,
-    ) -> Result<crate::models::CommentDto, CamundaClientError>;
-    fn get_comments(&self, id: &str) -> Result<Vec<crate::models::CommentDto>, CamundaClientError>;
+    ) -> Result<crate::models::CommentDto, crate::apis::CamundaClientError>;
+    fn get_comments(
+        &self,
+        id: &str,
+    ) -> Result<Vec<crate::models::CommentDto>, crate::apis::CamundaClientError>;
 }
 
 impl TaskCommentApi for TaskCommentApiClient {
@@ -47,14 +49,14 @@ impl TaskCommentApi for TaskCommentApiClient {
         &self,
         id: &str,
         comment_dto: Option<crate::models::CommentDto>,
-    ) -> Result<crate::models::CommentDto, CamundaClientError> {
+    ) -> Result<crate::models::CommentDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/comment/create",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -73,15 +75,15 @@ impl TaskCommentApi for TaskCommentApiClient {
         &self,
         id: &str,
         comment_id: &str,
-    ) -> Result<crate::models::CommentDto, CamundaClientError> {
+    ) -> Result<crate::models::CommentDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/comment/{commentId}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            commentId = url_encode::url_encode(comment_id)
+            id = crate::apis::urlencode(id),
+            commentId = crate::apis::urlencode(comment_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -95,14 +97,17 @@ impl TaskCommentApi for TaskCommentApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_comments(&self, id: &str) -> Result<Vec<crate::models::CommentDto>, CamundaClientError> {
+    fn get_comments(
+        &self,
+        id: &str,
+    ) -> Result<Vec<crate::models::CommentDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/comment",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 

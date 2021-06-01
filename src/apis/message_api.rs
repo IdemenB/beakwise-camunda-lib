@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct MessageApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl MessageApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> MessageApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> MessageApiClient {
         MessageApiClient { configuration }
     }
 }
@@ -32,15 +31,20 @@ pub trait MessageApi {
     fn deliver_message(
         &self,
         correlation_message_dto: Option<crate::models::CorrelationMessageDto>,
-    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, CamundaClientError>;
+    ) -> Result<
+        Vec<crate::models::MessageCorrelationResultWithVariableDto>,
+        crate::apis::CamundaClientError,
+    >;
 }
 
 impl MessageApi for MessageApiClient {
     fn deliver_message(
         &self,
         correlation_message_dto: Option<crate::models::CorrelationMessageDto>,
-    ) -> Result<Vec<crate::models::MessageCorrelationResultWithVariableDto>, CamundaClientError>
-    {
+    ) -> Result<
+        Vec<crate::models::MessageCorrelationResultWithVariableDto>,
+        crate::apis::CamundaClientError,
+    > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

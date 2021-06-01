@@ -11,29 +11,32 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct VersionApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl VersionApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> VersionApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> VersionApiClient {
         VersionApiClient { configuration }
     }
 }
 
 pub trait VersionApi {
-    fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, CamundaClientError>;
+    fn get_rest_api_version(
+        &self,
+    ) -> Result<crate::models::VersionDto, crate::apis::CamundaClientError>;
 }
 
 impl VersionApi for VersionApiClient {
-    fn get_rest_api_version(&self) -> Result<crate::models::VersionDto, CamundaClientError> {
+    fn get_rest_api_version(
+        &self,
+    ) -> Result<crate::models::VersionDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

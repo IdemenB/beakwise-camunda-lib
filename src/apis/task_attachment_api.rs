@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct TaskAttachmentApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl TaskAttachmentApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskAttachmentApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskAttachmentApiClient {
         TaskAttachmentApiClient { configuration }
     }
 }
@@ -37,22 +36,26 @@ pub trait TaskAttachmentApi {
         attachment_type: Option<&str>,
         url: Option<&str>,
         content: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::AttachmentDto, CamundaClientError>;
-    fn delete_attachment(&self, id: &str, attachment_id: &str) -> Result<(), CamundaClientError>;
+    ) -> Result<crate::models::AttachmentDto, crate::apis::CamundaClientError>;
+    fn delete_attachment(
+        &self,
+        id: &str,
+        attachment_id: &str,
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn get_attachment(
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<crate::models::AttachmentDto, CamundaClientError>;
+    ) -> Result<crate::models::AttachmentDto, crate::apis::CamundaClientError>;
     fn get_attachment_data(
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_attachments(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::AttachmentDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::AttachmentDto>, crate::apis::CamundaClientError>;
 }
 
 impl TaskAttachmentApi for TaskAttachmentApiClient {
@@ -64,14 +67,14 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         attachment_type: Option<&str>,
         url: Option<&str>,
         content: Option<std::path::PathBuf>,
-    ) -> Result<crate::models::AttachmentDto, CamundaClientError> {
+    ) -> Result<crate::models::AttachmentDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/attachment/create",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -102,15 +105,19 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn delete_attachment(&self, id: &str, attachment_id: &str) -> Result<(), CamundaClientError> {
+    fn delete_attachment(
+        &self,
+        id: &str,
+        attachment_id: &str,
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/attachment/{attachmentId}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            attachmentId = url_encode::url_encode(attachment_id)
+            id = crate::apis::urlencode(id),
+            attachmentId = crate::apis::urlencode(attachment_id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -129,15 +136,15 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<crate::models::AttachmentDto, CamundaClientError> {
+    ) -> Result<crate::models::AttachmentDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/attachment/{attachmentId}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            attachmentId = url_encode::url_encode(attachment_id)
+            id = crate::apis::urlencode(id),
+            attachmentId = crate::apis::urlencode(attachment_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -155,15 +162,15 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
         &self,
         id: &str,
         attachment_id: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/attachment/{attachmentId}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            attachmentId = url_encode::url_encode(attachment_id)
+            id = crate::apis::urlencode(id),
+            attachmentId = crate::apis::urlencode(attachment_id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -180,14 +187,14 @@ impl TaskAttachmentApi for TaskAttachmentApiClient {
     fn get_attachments(
         &self,
         id: &str,
-    ) -> Result<Vec<crate::models::AttachmentDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::AttachmentDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/attachment",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 

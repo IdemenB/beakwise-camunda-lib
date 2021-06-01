@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct MetricsApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl MetricsApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> MetricsApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> MetricsApiClient {
         MetricsApiClient { configuration }
     }
 }
@@ -34,7 +33,7 @@ pub trait MetricsApi {
         metrics_name: &str,
         start_date: Option<String>,
         end_date: Option<String>,
-    ) -> Result<crate::models::MetricsResultDto, CamundaClientError>;
+    ) -> Result<crate::models::MetricsResultDto, crate::apis::CamundaClientError>;
     fn interval(
         &self,
         name: Option<&str>,
@@ -45,7 +44,7 @@ pub trait MetricsApi {
         max_results: Option<i32>,
         interval: Option<&str>,
         aggregate_by_reporter: Option<&str>,
-    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, crate::apis::CamundaClientError>;
 }
 
 impl MetricsApi for MetricsApiClient {
@@ -54,14 +53,14 @@ impl MetricsApi for MetricsApiClient {
         metrics_name: &str,
         start_date: Option<String>,
         end_date: Option<String>,
-    ) -> Result<crate::models::MetricsResultDto, CamundaClientError> {
+    ) -> Result<crate::models::MetricsResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/metrics/{metrics_name}/sum",
             configuration.base_path,
-            metrics_name = url_encode::url_encode(metrics_name)
+            metrics_name = crate::apis::urlencode(metrics_name)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -91,7 +90,7 @@ impl MetricsApi for MetricsApiClient {
         max_results: Option<i32>,
         interval: Option<&str>,
         aggregate_by_reporter: Option<&str>,
-    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::MetricsIntervalResultDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct TaskLocalVariableApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl TaskLocalVariableApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskLocalVariableApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskLocalVariableApiClient {
         TaskLocalVariableApiClient { configuration }
     }
 }
@@ -33,44 +32,44 @@ pub trait TaskLocalVariableApi {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn get_task_local_variable(
         &self,
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, CamundaClientError>;
+    ) -> Result<crate::models::VariableValueDto, crate::apis::CamundaClientError>;
     fn get_task_local_variable_binary(
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError>;
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
     fn get_task_local_variables(
         &self,
         id: &str,
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn modify_task_local_variables(
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn put_task_local_variable(
         &self,
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn set_binary_task_local_variable(
         &self,
         id: &str,
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
 }
 
 impl TaskLocalVariableApi for TaskLocalVariableApiClient {
@@ -78,15 +77,15 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -106,15 +105,15 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         id: &str,
         var_name: &str,
         deserialize_value: Option<bool>,
-    ) -> Result<crate::models::VariableValueDto, CamundaClientError> {
+    ) -> Result<crate::models::VariableValueDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -135,15 +134,15 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         &self,
         id: &str,
         var_name: &str,
-    ) -> Result<std::path::PathBuf, CamundaClientError> {
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables/{varName}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -163,7 +162,7 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -171,7 +170,7 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         let uri_str = format!(
             "{}/task/{id}/localVariables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -192,14 +191,14 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         &self,
         id: &str,
         patch_variables_dto: Option<crate::models::PatchVariablesDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -220,15 +219,15 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         id: &str,
         var_name: &str,
         variable_value_dto: Option<crate::models::VariableValueDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables/{varName}",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
@@ -250,15 +249,15 @@ impl TaskLocalVariableApi for TaskLocalVariableApiClient {
         var_name: &str,
         data: Option<std::path::PathBuf>,
         value_type: Option<&str>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/localVariables/{varName}/data",
             configuration.base_path,
-            id = url_encode::url_encode(id),
-            varName = url_encode::url_encode(var_name)
+            id = crate::apis::urlencode(id),
+            varName = crate::apis::urlencode(var_name)
         );
         let mut req_builder = client.post(uri_str.as_str());
 

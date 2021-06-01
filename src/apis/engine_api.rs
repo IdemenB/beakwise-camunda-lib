@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct EngineApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl EngineApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> EngineApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> EngineApiClient {
         EngineApiClient { configuration }
     }
 }
@@ -31,13 +30,13 @@ impl EngineApiClient {
 pub trait EngineApi {
     fn get_process_engine_names(
         &self,
-    ) -> Result<Vec<crate::models::ProcessEngineDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::ProcessEngineDto>, crate::apis::CamundaClientError>;
 }
 
 impl EngineApi for EngineApiClient {
     fn get_process_engine_names(
         &self,
-    ) -> Result<Vec<crate::models::ProcessEngineDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::ProcessEngineDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

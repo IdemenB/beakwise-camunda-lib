@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct SignalApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl SignalApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> SignalApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> SignalApiClient {
         SignalApiClient { configuration }
     }
 }
@@ -32,14 +31,14 @@ pub trait SignalApi {
     fn throw_signal(
         &self,
         signal_dto: Option<crate::models::SignalDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
 }
 
 impl SignalApi for SignalApiClient {
     fn throw_signal(
         &self,
         signal_dto: Option<crate::models::SignalDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 

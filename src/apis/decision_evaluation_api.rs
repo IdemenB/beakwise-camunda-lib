@@ -1,18 +1,17 @@
-use std::borrow::Borrow;
-use std::sync::Arc;
-
-use super::configuration;
-use crate::errors::errors::CamundaClientError;
+use crate::apis::urlencode;
 use crate::models::DecisionDto;
 use crate::models::DecisionEvaluationDto;
-use crate::utils::url_encode;
+
+use super::configuration;
+use std::borrow::Borrow;
+use std::rc::Rc;
 
 pub struct DecisionEvaluationApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl DecisionEvaluationApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> DecisionEvaluationApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> DecisionEvaluationApiClient {
         DecisionEvaluationApiClient { configuration }
     }
 }
@@ -22,7 +21,7 @@ pub trait DecisionEvaluationApi {
         &self,
         key: &str,
         decision_evaluation_dto: DecisionEvaluationDto,
-    ) -> Result<DecisionDto, CamundaClientError>;
+    ) -> Result<DecisionDto, crate::apis::CamundaClientError>;
 }
 
 impl DecisionEvaluationApi for DecisionEvaluationApiClient {
@@ -30,14 +29,14 @@ impl DecisionEvaluationApi for DecisionEvaluationApiClient {
         &self,
         key: &str,
         decision_evaluation_dto: DecisionEvaluationDto,
-    ) -> Result<DecisionDto, CamundaClientError> {
+    ) -> Result<DecisionDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/decision-definition/key/{}/evaluate",
             configuration.base_path,
-            url_encode::url_encode(key)
+            urlencode(key)
         );
         let mut resp_builder = client.post(uri_str.as_str());
 

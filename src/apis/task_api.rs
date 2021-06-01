@@ -11,19 +11,18 @@
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::{errors::errors::CamundaClientError, utils::url_encode};
 use reqwest;
 
 use super::configuration;
 
 pub struct TaskApiClient {
-    configuration: Arc<configuration::Configuration>,
+    configuration: Rc<configuration::Configuration>,
 }
 
 impl TaskApiClient {
-    pub fn new(configuration: Arc<configuration::Configuration>) -> TaskApiClient {
+    pub fn new(configuration: Rc<configuration::Configuration>) -> TaskApiClient {
         TaskApiClient { configuration }
     }
 }
@@ -33,27 +32,31 @@ pub trait TaskApi {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn complete(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
     fn create_task(
         &self,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn delegate_task(
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError>;
-    fn delete_task(&self, id: &str) -> Result<(), CamundaClientError>;
-    fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
-    fn get_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
+    fn delete_task(&self, id: &str) -> Result<(), crate::apis::CamundaClientError>;
+    fn get_deployed_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
+    fn get_form(&self, id: &str)
+        -> Result<crate::models::FormDto, crate::apis::CamundaClientError>;
     fn get_form_variables(
         &self,
         id: &str,
@@ -61,10 +64,14 @@ pub trait TaskApi {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
-    fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError>;
-    fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, CamundaClientError>;
+    fn get_rendered_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError>;
+    fn get_task(&self, id: &str)
+        -> Result<crate::models::TaskDto, crate::apis::CamundaClientError>;
     fn get_tasks(
         &self,
         process_instance_id: Option<&str>,
@@ -158,7 +165,7 @@ pub trait TaskApi {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::TaskDto>, crate::apis::CamundaClientError>;
     fn get_tasks_count(
         &self,
         process_instance_id: Option<&str>,
@@ -248,51 +255,51 @@ pub trait TaskApi {
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
         parent_task_id: Option<&str>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
     fn handle_bpmn_error(
         &self,
         id: &str,
         task_bpmn_error_dto: Option<crate::models::TaskBpmnErrorDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn handle_escalation(
         &self,
         id: &str,
         task_escalation_dto: Option<crate::models::TaskEscalationDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn query_tasks(
         &self,
         first_result: Option<i32>,
         max_results: Option<i32>,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError>;
+    ) -> Result<Vec<crate::models::TaskDto>, crate::apis::CamundaClientError>;
     fn query_tasks_count(
         &self,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError>;
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError>;
     fn resolve(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn set_assignee(
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
     fn submit(
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     >;
-    fn unclaim(&self, id: &str) -> Result<(), CamundaClientError>;
+    fn unclaim(&self, id: &str) -> Result<(), crate::apis::CamundaClientError>;
     fn update_task(
         &self,
         id: &str,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), CamundaClientError>;
+    ) -> Result<(), crate::apis::CamundaClientError>;
 }
 
 impl TaskApi for TaskApiClient {
@@ -300,14 +307,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/claim",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -329,7 +336,7 @@ impl TaskApi for TaskApiClient {
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -337,7 +344,7 @@ impl TaskApi for TaskApiClient {
         let uri_str = format!(
             "{}/task/{id}/complete",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -355,7 +362,7 @@ impl TaskApi for TaskApiClient {
     fn create_task(
         &self,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -378,14 +385,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/delegate",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -401,14 +408,14 @@ impl TaskApi for TaskApiClient {
         Ok(())
     }
 
-    fn delete_task(&self, id: &str) -> Result<(), CamundaClientError> {
+    fn delete_task(&self, id: &str) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.delete(uri_str.as_str());
 
@@ -423,14 +430,17 @@ impl TaskApi for TaskApiClient {
         Ok(())
     }
 
-    fn get_deployed_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
+    fn get_deployed_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/deployed-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -444,14 +454,17 @@ impl TaskApi for TaskApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_form(&self, id: &str) -> Result<crate::models::FormDto, CamundaClientError> {
+    fn get_form(
+        &self,
+        id: &str,
+    ) -> Result<crate::models::FormDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -472,7 +485,7 @@ impl TaskApi for TaskApiClient {
         deserialize_values: Option<bool>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -480,7 +493,7 @@ impl TaskApi for TaskApiClient {
         let uri_str = format!(
             "{}/task/{id}/form-variables",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -500,14 +513,17 @@ impl TaskApi for TaskApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_rendered_form(&self, id: &str) -> Result<std::path::PathBuf, CamundaClientError> {
+    fn get_rendered_form(
+        &self,
+        id: &str,
+    ) -> Result<std::path::PathBuf, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/rendered-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -521,14 +537,17 @@ impl TaskApi for TaskApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn get_task(&self, id: &str) -> Result<crate::models::TaskDto, CamundaClientError> {
+    fn get_task(
+        &self,
+        id: &str,
+    ) -> Result<crate::models::TaskDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.get(uri_str.as_str());
 
@@ -635,7 +654,7 @@ impl TaskApi for TaskApiClient {
         sort_order: Option<&str>,
         first_result: Option<i32>,
         max_results: Option<i32>,
-    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::TaskDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -971,7 +990,6 @@ impl TaskApi for TaskApiClient {
         assigned: Option<bool>,
         unassigned: Option<bool>,
         task_definition_key: Option<&str>,
-
         task_definition_key_in: Option<&str>,
         task_definition_key_like: Option<&str>,
         name: Option<&str>,
@@ -1018,7 +1036,7 @@ impl TaskApi for TaskApiClient {
         variable_names_ignore_case: Option<bool>,
         variable_values_ignore_case: Option<bool>,
         parent_task_id: Option<&str>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1303,14 +1321,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_bpmn_error_dto: Option<crate::models::TaskBpmnErrorDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/bpmnError",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1330,14 +1348,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_escalation_dto: Option<crate::models::TaskEscalationDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/bpmnEscalation",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1358,7 +1376,7 @@ impl TaskApi for TaskApiClient {
         first_result: Option<i32>,
         max_results: Option<i32>,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<Vec<crate::models::TaskDto>, CamundaClientError> {
+    ) -> Result<Vec<crate::models::TaskDto>, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1385,7 +1403,7 @@ impl TaskApi for TaskApiClient {
     fn query_tasks_count(
         &self,
         task_query_dto: Option<crate::models::TaskQueryDto>,
-    ) -> Result<crate::models::CountResultDto, CamundaClientError> {
+    ) -> Result<crate::models::CountResultDto, crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
@@ -1407,14 +1425,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/resolve",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1434,14 +1452,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         user_id_dto: Option<crate::models::UserIdDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/assignee",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1463,7 +1481,7 @@ impl TaskApi for TaskApiClient {
         complete_task_dto: Option<crate::models::CompleteTaskDto>,
     ) -> Result<
         ::std::collections::HashMap<String, crate::models::VariableValueDto>,
-        CamundaClientError,
+        crate::apis::CamundaClientError,
     > {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
@@ -1471,7 +1489,7 @@ impl TaskApi for TaskApiClient {
         let uri_str = format!(
             "{}/task/{id}/submit-form",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1486,14 +1504,14 @@ impl TaskApi for TaskApiClient {
         Ok(client.execute(req)?.error_for_status()?.json()?)
     }
 
-    fn unclaim(&self, id: &str) -> Result<(), CamundaClientError> {
+    fn unclaim(&self, id: &str) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}/unclaim",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.post(uri_str.as_str());
 
@@ -1512,14 +1530,14 @@ impl TaskApi for TaskApiClient {
         &self,
         id: &str,
         task_dto: Option<crate::models::TaskDto>,
-    ) -> Result<(), CamundaClientError> {
+    ) -> Result<(), crate::apis::CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
             "{}/task/{id}",
             configuration.base_path,
-            id = url_encode::url_encode(id)
+            id = crate::apis::urlencode(id)
         );
         let mut req_builder = client.put(uri_str.as_str());
 
