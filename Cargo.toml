@@ -1,5 +1,5 @@
 [package]
-name = "original_lib"
+name = "beakwise_camunda_lib"
 version = "0.1.0"
 authors = ["IdemenB <baris.idemen@beakwise.com>"]
 edition = "2018"
