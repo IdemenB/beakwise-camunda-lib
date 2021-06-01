@@ -23,25 +23,24 @@ impl DecisionEvaluationApiClient {
 pub trait DecisionEvaluationApi {
     async fn evaluate_decision(
         &self,
-        id: &str,
-        decision_evaluation_dto: Option<DecisionEvaluationDto>,
-    ) -> Result<Vec<DecisionDto>, CamundaClientError>;
+        key: &str,
+        decision_evaluation_dto: DecisionEvaluationDto,
+    ) -> Result<DecisionDto, CamundaClientError>;
 }
 
 #[async_trait]
 impl DecisionEvaluationApi for DecisionEvaluationApiClient {
     async fn evaluate_decision(
         &self,
-        id: &str,
-        decision_evaluation_dto: Option<DecisionEvaluationDto>,
-    ) -> Result<Vec<DecisionDto>, CamundaClientError> {
+        key: &str,
+        decision_evaluation_dto: DecisionEvaluationDto,
+    ) -> Result<DecisionDto, CamundaClientError> {
         let configuration: &configuration::Configuration = self.configuration.borrow();
         let client = &configuration.client;
 
         let uri_str = format!(
-            "{}/decision-definition/{id}/evaluate",
-            configuration.base_path,
-            id = url_encode::url_encode(id)
+            "{}/decision-definition/key/{}/evaluate",
+            configuration.base_path, key
         );
         let mut req_builder = client.post(uri_str.as_str());
 
