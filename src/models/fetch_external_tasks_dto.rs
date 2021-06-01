@@ -21,7 +21,10 @@ pub struct FetchExternalTasksDto {
     #[serde(rename = "usePriority", skip_serializing_if = "Option::is_none")]
     pub use_priority: Option<bool>,
     /// The [Long Polling](https://docs.camunda.org/manual/7.13/user-guide/process-engine/external-tasks/#long-polling-to-fetch-and-lock-external-tasks) timeout in milliseconds.  **Note:** The value cannot be set larger than 1.800.000 milliseconds (corresponds to 30 minutes).
-    #[serde(rename = "ResponseTimeout", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "asyncResponseTimeout",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub async_response_timeout: Option<i64>,
     /// A JSON array of topic objects for which external tasks should be fetched. The returned tasks may be arbitrarily distributed among these topics. Each topic object has the following properties:
     #[serde(rename = "topics", skip_serializing_if = "Option::is_none")]
